@@ -2,6 +2,7 @@ import { http } from './config'
 
 export default {
 
+    user: null,
     listar:() => {
         return http.get('funcionario')
     },

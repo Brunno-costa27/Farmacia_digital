@@ -2,6 +2,8 @@
   <a-table :columns="columns" :data-source="funcionarios" id="tab">
     <a slot="name" slot-scope="text">{{ text }}</a>
   </a-table>
+  
+
 </template>
 <script>
 
@@ -12,7 +14,6 @@ const columns = [
     title: 'cpf',
     dataIndex: 'cpf',
     key: 'cpf',
-    scopedSlots: { customRender: 'cpf' },
   },
   {
     title: 'nome',

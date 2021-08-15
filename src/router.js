@@ -4,14 +4,14 @@ import login from './view/login.vue';
 import tabela from './view/tabela.vue';
 import preco from './view/preco.vue';
 import painel from './view/painel.vue';
-
+import Funcionario from '../src/services/funcionarios'
 
 
 
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
 
     mode: 'history',
     routes: [
@@ -33,8 +33,27 @@ export default new Router({
           {
             path: '/painel',
             name: 'painel',
-            component: painel
-          }
+            component: painel,
+            meta: { requiresAuth: true }
+          },
+          
        
     ]
 })
+
+router.beforeEach((to, from, next) => {
+
+  if(to.meta.requiresAuth){
+    if(!Funcionario.user){
+      next({
+        name: "login"
+      })
+    }else{
+      next();
+    }
+  }else{
+    next();
+  }
+})
+
+export default router

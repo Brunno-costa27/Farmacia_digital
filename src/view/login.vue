@@ -38,6 +38,7 @@
 
 <script>
 import axios from "axios";
+import Funcionario from '../services/funcionarios'
 export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "normal_login" });
@@ -76,9 +77,14 @@ export default {
         this.cpf = "";
         this.senha = "";
       } else if (this.message === "seja bem vindo!") {
+        this.login();
         this.$router.push({ name: 'painel' , params: {cpf: this.cpf}});
       }
     },
+    login(){
+      Funcionario.user = this.cpf;
+      console.log(Funcionario.user);
+    }
   },
 };
 </script>
