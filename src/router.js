@@ -4,6 +4,8 @@ import login from './view/login.vue';
 import tabela from './view/tabela.vue';
 import preco from './view/preco.vue';
 import painel from './view/painel.vue';
+import cadastroFuncionario from './view/cadastroFuncionario.vue';
+
 import Funcionario from '../src/services/funcionarios'
 
 
@@ -29,6 +31,11 @@ const router = new Router({
             path: '/preco',
             name: 'preco',
             component: preco
+          },
+          {
+            path: '/cadastro',
+            name: 'cadastro',
+            component: cadastroFuncionario
           },
           {
             path: '/painel',
