@@ -39,7 +39,7 @@ const columns = [
   {
     title: 'medicamento',
     dataIndex: 'medicamento',
-    width: '25%',
+    width: '15%',
     scopedSlots: { customRender: 'medicamento' },
   },
   {

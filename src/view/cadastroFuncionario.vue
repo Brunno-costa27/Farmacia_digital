@@ -1,5 +1,5 @@
 <template>
-  <a-form :form="form" @submit="handleSubmit">
+  <a-form :form="form" @submit="handleSubmit" id="components-form-demo-normal-login"  class="login-form">
     <a-form-item  label="Nome">
       <a-input
         v-model="nome"
@@ -7,7 +7,7 @@
       />
     </a-form-item>
 
-      <a-form-item label="cpf" has-feedback>
+      <a-form-item label="cpf" has-feedback v-mask="'###.###.###-##'">
       <a-input
         v-model="cpf"
         required
@@ -33,14 +33,14 @@
     <a-form-item >
 
     </a-form-item>
-    <a-form-item >
-      <a-button type="primary" html-type="submit">
+    <a-form-item  >
+      <a-button type="primary"  html-type="submit" class="login-form-button">
         Registrar
          <div v-if="active">
           <router-link  to="/painel"></router-link>
           <router-view />
         </div>
-      </a-button>
+      </a-button >
       <a-alert v-if="active" type="error" v-text="messageError" />
     </a-form-item>
   </a-form>
@@ -99,3 +99,16 @@ export default {
 }
 
 </script>
+
+<style>
+
+#components-form-demo-normal-login .login-form {
+  max-width: 300px;
+}
+#components-form-demo-normal-login .login-form-forgot {
+  float: right;
+}
+#components-form-demo-normal-login .login-form-button {
+  width: 100%;
+}
+</style>>

@@ -14,6 +14,7 @@ const columns = [
     title: 'cpf',
     dataIndex: 'cpf',
     key: 'cpf',
+     width: '15%',
   },
   {
     title: 'nome',

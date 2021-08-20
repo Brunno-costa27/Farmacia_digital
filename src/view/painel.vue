@@ -17,6 +17,10 @@
             <router-link to="/tabela">visualizar funcionarios</router-link>
             <router-view></router-view>
           </a-menu-item>
+            <a-menu-item key="8">
+            <router-link to="/cadastro">Cadastrar funcionarios</router-link>
+            <router-view></router-view>
+          </a-menu-item>
         </a-sub-menu>
       </a-menu>
     </a-layout-sider>

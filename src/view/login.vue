@@ -49,7 +49,6 @@ export default {
       senha: "",
       message: null,
       active: false,
-      errors: [],
     };
   },
 
@@ -86,7 +85,6 @@ export default {
       Funcionario.user = this.cpf;
       console.log(Funcionario.user);
     },
-    
   },
 };
 </script>
