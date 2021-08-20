@@ -8,5 +8,8 @@ export default {
     },
     listar1:() => {
         return http.get('historico')
+    },
+    salvar:(funcionario) => {
+        return http.post('funcionario', funcionario)
     }
 }

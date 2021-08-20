@@ -1,140 +1,64 @@
 <template>
   <a-form :form="form" @submit="handleSubmit">
-    <a-form-item v-bind="formItemLayout" label="Nome">
+    <a-form-item  label="Nome">
       <a-input
-        v-decorator="[
-          'email',
-          {
-            rules: [
-              {
-                type: 'email',
-                message: 'The input is not valid E-mail!',
-              },
-              {
-                required: true,
-                message: 'Please input your E-mail!',
-              },
-            ],
-          },
-        ]"
+        v-model="nome"
+        required
       />
     </a-form-item>
 
-      <a-form-item v-bind="formItemLayout" label="cpf" has-feedback>
+      <a-form-item label="cpf" has-feedback>
       <a-input
-        v-decorator="[
-          'password',
-          {
-            rules: [
-              {
-                required: true,
-                message: 'Please input your password!',
-              },
-              {
-                validator: validateToNextPassword,
-              },
-            ],
-          },
-        ]"
+        v-model="cpf"
+        required
+      />
+    </a-form-item>
+
+      <a-form-item label="cargo" has-feedback>
+      <a-input
+        v-model="cargo"
+        required
+      />
+    </a-form-item>
+
+    <a-form-item  label="Senha" has-feedback>
+      <a-input
         type="password"
-      />
-    </a-form-item>
-    <a-form-item v-bind="formItemLayout" label="Senha" has-feedback>
-      <a-input
-        v-decorator="[
-          'password',
-          {
-            rules: [
-              {
-                required: true,
-                message: 'Please input your password!',
-              },
-              {
-                validator: validateToNextPassword,
-              },
-            ],
-          },
-        ]"
-        type="password"
+        v-model="senha"
+        required
       />
     </a-form-item>
 
 
-    <a-form-item v-bind="tailFormItemLayout">
+    <a-form-item >
 
     </a-form-item>
-    <a-form-item v-bind="tailFormItemLayout">
+    <a-form-item >
       <a-button type="primary" html-type="submit">
         Registrar
+         <div v-if="active">
+          <router-link  to="/painel"></router-link>
+          <router-view />
+        </div>
       </a-button>
+      <a-alert v-if="active" type="error" v-text="messageError" />
     </a-form-item>
   </a-form>
 </template>
 
 <script>
-const residences = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
+import axios from "axios";
 
 export default {
   data() {
     return {
-      confirmDirty: false,
-      residences,
-      autoCompleteResult: [],
-      formItemLayout: {
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 8 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
-      },
-      tailFormItemLayout: {
-        wrapperCol: {
-          xs: {
-            span: 24,
-            offset: 0,
-          },
-          sm: {
-            span: 16,
-            offset: 8,
-          },
-        },
-      },
+        nome:'',
+        cpf: '',
+        senha: '',
+        cargo: '',
+        messageError: null,
+        message: null,
+        active: false,
     };
   },
   beforeCreate() {
@@ -143,40 +67,35 @@ export default {
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-      this.form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values);
-        }
-      });
+        axios.post(`http://localhost:3333/funcionario`, {
+        nome: this.nome,
+        cpf: this.cpf,
+        senha: this.senha,
+        cargo: this.cargo,
+          
+        })
+        .then((res) => {
+          this.messageError = res.data.error;
+          this.message = res.data.message;
+          console.log(res.data.error);
+          this.activeError();
+        })
+        .catch((e) => {
+          console.log(e.response.error);
+        });
     },
-    handleConfirmBlur(e) {
-      const value = e.target.value;
-      this.confirmDirty = this.confirmDirty || !!value;
-    },
-    compareToFirstPassword(rule, value, callback) {
-      const form = this.form;
-      if (value && value !== form.getFieldValue('password')) {
-        callback('Two passwords that you enter is inconsistent!');
-      } else {
-        callback();
+    activeError() {
+      if (this.messageError === "funcionario already exists") {
+        this.active = true;
+        this.cpf = "";
+        this.senha = "";
+        this.cargo =  "";
+        this.nome = "";
+      } else if (this.message === "cadastrado com sucesso!") {
+        console.log('deu certo');
       }
     },
-    validateToNextPassword(rule, value, callback) {
-      const form = this.form;
-      if (value && this.confirmDirty) {
-        form.validateFields(['confirm'], { force: true });
-      }
-      callback();
-    },
-    handleWebsiteChange(value) {
-      let autoCompleteResult;
-      if (!value) {
-        autoCompleteResult = [];
-      } else {
-        autoCompleteResult = ['.com', '.org', '.net'].map(domain => `${value}${domain}`);
-      }
-      this.autoCompleteResult = autoCompleteResult;
-    },
-  },
-};
+    }
+}
+
 </script>
