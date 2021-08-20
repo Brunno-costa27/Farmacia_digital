@@ -9,13 +9,13 @@
   >
     <a-form-item>
       <a-avatar :size="64" icon="user" id="avatar" />
-      <a-input placeholder="Username" v-model="cpf" required>
+      <a-input placeholder="Insira seu cpf" type="text" v-mask="'###.###.###-##'" v-model="cpf" required>
         <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
 
     <a-form-item>
-      <a-input type="password" placeholder="Password" v-model="senha" required>
+      <a-input type="password" placeholder="Insira uma senha" v-model="senha" required>
         <a-icon slot="prefix" type="lock" style="color: rgba(0, 0, 0, 0.25)" />
       </a-input>
     </a-form-item>
@@ -49,6 +49,7 @@ export default {
       senha: "",
       message: null,
       active: false,
+      errors: [],
     };
   },
 
@@ -84,7 +85,8 @@ export default {
     login(){
       Funcionario.user = this.cpf;
       console.log(Funcionario.user);
-    }
+    },
+    
   },
 };
 </script>
