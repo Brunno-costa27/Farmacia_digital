@@ -13,11 +13,11 @@
             <router-link to="/preco">cadastrar preços</router-link>
             <router-view></router-view>
           </a-menu-item>
-          <a-menu-item key="8">
+          <a-menu-item >
             <router-link to="/tabela">visualizar funcionarios</router-link>
             <router-view></router-view>
           </a-menu-item>
-            <a-menu-item key="8">
+            <a-menu-item >
             <router-link to="/cadastro">Cadastrar funcionarios</router-link>
             <router-view></router-view>
           </a-menu-item>
@@ -64,8 +64,7 @@ export default {
       // console.log(resposta.data);
       this.funcionarios = resposta.data;
       this.usuario = this.$route.params.cpf;
-      var convertidoCpf = parseInt(this.usuario);
-      this.user1(convertidoCpf)
+      this.user1(this.usuario)
     })
   },
   methods:{

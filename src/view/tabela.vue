@@ -30,7 +30,9 @@ const columns = [
   },
 ];
 
-const funcionarios = [];
+const funcionarios = [{
+  key: "cpf"
+}];
 
 export default {
   data() {

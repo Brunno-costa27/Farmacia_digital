@@ -1,47 +1,38 @@
 <template>
-  <a-form :form="form" @submit="handleSubmit" id="components-form-demo-normal-login"  class="login-form">
-    <a-form-item  label="Nome">
-      <a-input
-        v-model="nome"
-        required
-      />
+  <a-form
+    :form="form"
+    @submit="handleSubmit"
+
+  >
+    <a-form-item v-bind="formItemLayout" label="Nome">
+      <a-input v-model="nome" required :class="vai"/>
     </a-form-item>
 
-      <a-form-item label="cpf" has-feedback v-mask="'###.###.###-##'">
-      <a-input
-        v-model="cpf"
-        required
-      />
+    <a-form-item
+      v-bind="formItemLayout"
+      label="cpf"
+      has-feedback
+      v-mask="'###.###.###-##'"
+    >
+      <a-input v-model="cpf" required />
     </a-form-item>
 
-      <a-form-item label="cargo" has-feedback>
-      <a-input
-        v-model="cargo"
-        required
-      />
+    <a-form-item v-bind="formItemLayout" label="cargo" has-feedback>
+      <a-input v-model="cargo" required />
     </a-form-item>
 
-    <a-form-item  label="Senha" has-feedback>
-      <a-input
-        type="password"
-        v-model="senha"
-        required
-      />
+    <a-form-item v-bind="formItemLayout" label="Senha" has-feedback>
+      <a-input type="password" v-model="senha" required />
     </a-form-item>
 
-
-    <a-form-item >
-
-    </a-form-item>
-    <a-form-item  >
-      <a-button type="primary"  html-type="submit" class="login-form-button">
+    <a-form-item v-bind="tailFormItemLayout">
+      <a-button type="primary" html-type="submit"  >
         Registrar
-         <div v-if="active">
-          <router-link  to="/painel"></router-link>
+        <div v-if="active">
+          <router-link to="/painel"></router-link>
           <router-view />
         </div>
-      </a-button >
-      <a-alert v-if="active" type="error" v-text="messageError" />
+      </a-button>
     </a-form-item>
   </a-form>
 </template>
@@ -52,27 +43,49 @@ import axios from "axios";
 export default {
   data() {
     return {
-        nome:'',
-        cpf: '',
-        senha: '',
-        cargo: '',
-        messageError: null,
-        message: null,
-        active: false,
+      nome: "",
+      cpf: "",
+      senha: "",
+      cargo: "",
+      messageError: null,
+      message: null,
+      active: false,
+      formItemLayout: {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 8 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+      },
+      tailFormItemLayout: {
+        wrapperCol: {
+          xs: {
+            span: 26,
+            offset: 10,
+          },
+          sm: {
+            span: 16,
+            offset: 8,
+          },
+        },
+      },
     };
   },
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: 'register' });
+    this.form = this.$form.createForm(this, { name: "register" });
   },
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-        axios.post(`http://localhost:3333/funcionario`, {
-        nome: this.nome,
-        cpf: this.cpf,
-        senha: this.senha,
-        cargo: this.cargo,
-          
+      axios
+        .post(`http://localhost:3333/funcionario`, {
+          nome: this.nome,
+          cpf: this.cpf,
+          senha: this.senha,
+          cargo: this.cargo,
         })
         .then((res) => {
           this.messageError = res.data.error;
@@ -89,26 +102,16 @@ export default {
         this.active = true;
         this.cpf = "";
         this.senha = "";
-        this.cargo =  "";
+        this.cargo = "";
         this.nome = "";
       } else if (this.message === "cadastrado com sucesso!") {
-        console.log('deu certo');
+        console.log("deu certo");
       }
     },
-    }
-}
-
+  },
+};
 </script>
 
-<style>
+<style scoped>
 
-#components-form-demo-normal-login .login-form {
-  max-width: 300px;
-}
-#components-form-demo-normal-login .login-form-forgot {
-  float: right;
-}
-#components-form-demo-normal-login .login-form-button {
-  width: 100%;
-}
 </style>>
