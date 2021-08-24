@@ -1,9 +1,9 @@
 <template>
   <a-table :columns="columns" :data-source="funcionarios" id="tab">
     <a slot="name" slot-scope="text">{{ text }}</a>
+  {{usuario}}
   </a-table>
   
-
 </template>
 <script>
 
@@ -30,21 +30,22 @@ const columns = [
   },
 ];
 
-const funcionarios = [{
-  key: "cpf"
-}];
+const funcionarios = [];
 
 export default {
   data() {
     return {
       funcionarios,
       columns,
+      usuario: ''
     };
   },
   mounted() {
     Funcionario.listar().then(resposta => {
       console.log(resposta.data);
       this.funcionarios = resposta.data;
+      this.usuario = this.$route.params.usuario;
+      console.log(this.usuario, 'aqui');
     })
   }
 };

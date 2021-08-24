@@ -1,11 +1,13 @@
 <template>
+  <div>
+
   <a-form
     :form="form"
     @submit="handleSubmit"
 
   >
     <a-form-item v-bind="formItemLayout" label="Nome">
-      <a-input v-model="nome" required :class="vai"/>
+      <a-input v-model="nome" required/>
     </a-form-item>
 
     <a-form-item
@@ -26,15 +28,17 @@
     </a-form-item>
 
     <a-form-item v-bind="tailFormItemLayout">
-      <a-button type="primary" html-type="submit"  >
+      <a-button type="primary" html-type="submit" @click="voltar" >
         Registrar
-        <div v-if="active">
           <router-link to="/painel"></router-link>
           <router-view />
-        </div>
+        
       </a-button>
+  
     </a-form-item>
+    
   </a-form>
+  </div>
 </template>
 
 <script>
@@ -108,6 +112,9 @@ export default {
         console.log("deu certo");
       }
     },
+    voltar(){
+      return this.$router.go(-1);
+    }
   },
 };
 </script>
