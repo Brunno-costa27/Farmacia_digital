@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import login from './view/login.vue';
 // import tabela from './view/tabela.vue';
-import preco from './view/preco.vue';
+// import preco from './view/preco.vue';
 import painel from './view/painel.vue';
 import cadastroFuncionario from './view/cadastroFuncionario.vue';
 
@@ -43,38 +43,24 @@ const router = new Router({
 
     // },
 
-    {
-      path: '/preco',
-      name: 'preco',
-      component: preco,
-      beforeEnter: (to , from , next)  => {
-        if (!Funcionario.user) {
-          next({
-            name: "login"
-          })
-        } else {
-          next();
-        }
-      } 
-    },
+    // {
+    //   path: '/preco',
+    //   name: 'preco',
+    //   component: preco,
+    //   beforeEnter: (to , from , next)  => {
+    //     if (!Funcionario.user) {
+    //       next({
+    //         name: "login"
+    //       })
+    //     } else {
+    //       next();
+    //     }
+    //   } 
+    // },
     {
       path: '/cadastro',
       name: 'cadastro',
       component: cadastroFuncionario,
-      beforeEnter: (to , from , next)  => {
-        if (!Funcionario.user) {
-          next({
-            name: "login"
-          })
-        } else {
-          next();
-        }
-      } 
-    },
-    {
-      path: '/painel',
-      name: 'painel',
-      component: painel,
       // beforeEnter: (to , from , next)  => {
       //   if (!Funcionario.user) {
       //     next({
@@ -83,7 +69,21 @@ const router = new Router({
       //   } else {
       //     next();
       //   }
-      // }      
+      // } 
+    },
+    {
+      path: '/painel',
+      name: 'painel',
+      component: painel,
+      beforeEnter: (to , from , next)  => {
+        if (!Funcionario.user) {
+          next({
+            name: "login"
+          })
+        } else {
+          next();
+        }
+      }      
     },
 
   ]
