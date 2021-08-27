@@ -6,7 +6,7 @@ import preco from './view/preco.vue';
 import painel from './view/painel.vue';
 import cadastroFuncionario from './view/cadastroFuncionario.vue';
 
-import Funcionario from '../src/services/funcionarios'
+// import Funcionario from '../src/services/funcionarios'
 
 
 
@@ -75,15 +75,15 @@ const router = new Router({
       path: '/painel',
       name: 'painel',
       component: painel,
-      beforeEnter: (to , from , next)  => {
-        if (!Funcionario.user) {
-          next({
-            name: "login"
-          })
-        } else {
-          next();
-        }
-      }      
+      // beforeEnter: (to , from , next)  => {
+      //   if (!Funcionario.user) {
+      //     next({
+      //       name: "login"
+      //     })
+      //   } else {
+      //     next();
+      //   }
+      // }      
     },
 
   ]

@@ -1,69 +1,102 @@
 
 <template>
-   <a-table :columns="columns" :data-source="requisições" bordered id="tabela">
-    <template
-      v-for="col in ['name', 'age', 'address mexer aqui']" 
-      :slot="col"
-      slot-scope="text, record, "
-    >
+  <a-table :columns="columns" :data-source="requisições" bordered id="tabela">
+    <template v-for="col in ['valor']" :slot="col" slot-scope="text, record">
       <div :key="col">
         <a-input
           v-if="record.editable"
           style="margin: -5px 0"
           :value="text"
-          @change="e => handleChange(e.target.value, record.key, col)"
+          @change="(e) => handleChange(e.target.value, record.id_historico, col)"
         />
         <template v-else>
           {{ text }}
         </template>
       </div>
     </template>
-    <template slot="operation" slot-scope="text, record, ">
+    <template slot="operation" slot-scope="text, record">
       <div class="editable-row-operations">
         <span v-if="record.editable">
-          <a @click="() => save(record.key)">Save</a>
-          <a-popconfirm title="Sure to cancel?" @confirm="() => cancel(record.key)">
-            <a>Cancel</a>
+          <a @click="() => save(record.id_historico)">Salvar</a>
+          <a-popconfirm
+            title="Certifique-se de cancelar?"
+            @confirm="() => cancel(record.id_historico)"
+          >
+            <a>Cancelar</a>
           </a-popconfirm>
         </span>
         <span v-else>
-          <a :disabled="editingKey !== ''" @click="() => edit(record.key)">Editar</a>
+          <a :disabled="editingKey !== ''" @click="() => edit(record.id_historico)"
+            >Editar</a
+          >
         </span>
       </div>
     </template>
   </a-table>
 </template>
 <script>
+import Funcionario from "../services/funcionarios";
+const columns = [
+ 
+  {
+    title: "id_historico",
+    dataIndex: "id_historico",
+    width: "15%",
+    scopedSlots: { customRender: "id_historico" },
+  },
+ {
+    title: "medicamento",
+    dataIndex: "medicamento",
+    width: "15%",
+    scopedSlots: { customRender: "medicamento" },
+  },
+  {
+    title: "valor",
+    dataIndex: "valor",
+    width: "15%",
+    scopedSlots: { customRender: "valor" },
+  },
+  {
+    title: "paciente",
+    dataIndex: "paciente",
+    width: "40%",
+    scopedSlots: { customRender: "paciente" },
+  },
+  {
+    title: "data_historico",
+    dataIndex: "data_historico",
+    scopedSlots: { customRender: "data_historico" },
+  },
+  {
+    title: "telefone",
+    dataIndex: "telefone",
+    scopedSlots: { customRender: "telefone" },
+  },
+  {
+    title: "operation",
+    dataIndex: "operation",
+    scopedSlots: { customRender: "operation" },
+  },
+];
 
-import Funcionario from '../services/funcionarios'
 // const columns = [
 //   {
-//     title: 'medicamento',
-//     dataIndex: 'medicamento',
-//     width: '15%',
-//     scopedSlots: { customRender: 'medicamento' },
+//     title: 'name',
+//     dataIndex: 'name',
+//     width: '25%',
+//     scopedSlots: { customRender: 'name' },
 //   },
 //   {
-//     title: 'valor',
-//     dataIndex: 'valor',
+//     title: 'age',
+//     dataIndex: 'age',
 //     width: '15%',
-//     scopedSlots: { customRender: 'valor' },
+//     scopedSlots: { customRender: 'age' },
 //   },
 //   {
-//     title: 'paciente',
-//     dataIndex: 'paciente',
+//     title: 'address',
+//     dataIndex: 'address',
 //     width: '40%',
-//     scopedSlots: { customRender: 'paciente' },
-//   },
-//   {
-//     title: 'data',
-//     dataIndex: 'data_historico',
-//     scopedSlots: { customRender: 'data_historico' },
-//   },
-//   {
-//     title: 'telefone',
-//     dataIndex: 'telefone',
-//     scopedSlots: { customRender: 'telefone' },
+//     scopedSlots: { customRender: 'address' },
 //   },
 //   {
 //     title: 'operation',
@@ -72,99 +105,72 @@ import Funcionario from '../services/funcionarios'
 //   },
 // ];
 
-const columns = [
-  {
-    title: 'name',
-    dataIndex: 'name',
-    width: '25%',
-    scopedSlots: { customRender: 'name' },
-  },
-  {
-    title: 'age',
-    dataIndex: 'age',
-    width: '15%',
-    scopedSlots: { customRender: 'age' },
-  },
-  {
-    title: 'address',
-    dataIndex: 'address',
-    width: '40%',
-    scopedSlots: { customRender: 'address' },
-  },
-  {
-    title: 'operation',
-    dataIndex: 'operation',
-    scopedSlots: { customRender: 'operation' },
-  },
-];
-
 const requisições = [];
 
-for (let i = 0; i < 100; i++) {
-  requisições.push({
-    key: i.toString(),
-    name: `Edrward ${i}`,
-    age: 32,
-    address: `London Park no. ${i}`,
-  });
-}
 export default {
   data() {
-    this.cacheData = requisições.map(item => ({ ...item }));
     return {
       requisições,
       columns,
-      editingKey: ''
+      chave: "",
+      editingKey: "",
     };
   },
-   mounted() {
-    Funcionario.listar1().then(resposta => {
-      console.log(resposta.data);
+  mounted() {
+    Funcionario.listar1().then((resposta) => {
+      // console.log(resposta.data);
       this.requisições = resposta.data;
-    })
+      for (let i in this.requisições) {
+        console.log(this.requisições[i].id_historico);
+      }
+    });
+        // this.cacheData = this.requisições.map((item) => ({ ...item }));
   },
   methods: {
-    handleChange(value, key, column) {
+    handleChange(value, id_historico, column) {
       const newData = [...this.requisições];
-      const target = newData.filter(item => key === item.key)[0];
+      const target = newData.filter(item => id_historico === item.id_historico)[0];
+      console.log(id_historico, "aqui");
       if (target) {
         target[column] = value;
+        console.log(value, "valor");
         this.requisições = newData;
       }
     },
-    edit(key) {
+    edit(id_historico) {
       const newData = [...this.requisições];
-      const target = newData.filter(item => key === item.key)[0];
-      this.editingKey = key;
+      const target = newData.filter(item => id_historico === item.id_historico)[0];
+      this.editingKey = id_historico;
+      console.log(id_historico);
       if (target) {
         target.editable = true;
         this.requisições = newData;
-        console.log(this.requisições);
       }
     },
-    save(key) {
+    save(id_historico) {
       const newData = [...this.requisições];
-      const newCacheData = [...this.cacheData];
-      const target = newData.filter(item => key === item.key)[0];
-      const targetCache = newCacheData.filter(item => key === item.key)[0];
-      if (target && targetCache) {
-        delete target.editable;
-        this.requisições = newData;
-        Object.assign(targetCache, target);
-        this.cacheData = newCacheData;
-        console.log(this.requisições);
-      }
-      this.editingKey = '';
-    },
-    cancel(key) {
-      const newData = [...this.requisições];
-      const target = newData.filter(item => key === item.key)[0];
-      this.editingKey = '';
+      // const newCacheData = [...this.cacheData];
+      const target = newData.filter(item => id_historico === item.id_historico)[0];
+      console.log(target, 'target');
+      // const targetCache = newCacheData.filter(item => id_historico === item.id_historico)[0];
+      // console.log(targetCache, 'targetCache');
+
       if (target) {
-        Object.assign(target, this.cacheData.filter(item => key === item.key)[0]);
         delete target.editable;
         this.requisições = newData;
-        console.log(this.requisições);
+        Object.assign(target);
+      }
+      this.editingKey = "";
+    },
+    cancel(id_historico) {
+      const newData = [...this.requisições];
+      const target = newData.filter(item => id_historico === item.id_historico)[0];
+      this.editingKey = "";
+      console.log(target, 'target do cancel');
+      if (target) {
+        Object.assign(target);
+        delete target.editable;
+        this.requisições = newData;
       }
     },
   },
@@ -174,7 +180,7 @@ export default {
 .editable-row-operations a {
   margin-right: 8px;
 }
-#tabela{
+#tabela {
   width: 100%;
   height: 100%;
 }
