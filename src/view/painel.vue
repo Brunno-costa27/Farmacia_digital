@@ -121,7 +121,7 @@
             v-model="modal2Visible"
             title="Cadastro de funcionarios"
             centered
-            @ok="() => (modal2Visible = false)"
+            @ok="() => (modal2Visible = false, active2 = false, active3 = false)"
           >
             <div>
               <a-form :form="form" @submit="handleSubmit">
@@ -149,12 +149,10 @@
                 <a-form-item v-bind="formItemLayout">
                   <a-button type="primary" html-type="submit" @click="activeError">
                     Registrar
-                    <div v-if="active2">
-                      
-                    </div>
+                    
                   </a-button>
-                   <a-alert v-if="active2" type="error" v-text="messageError" style="text-align: center"/>
-                   <a-alert v-if="active3" type="success" v-text="message" style="text-align: center"/>
+                   <a-alert v-if="active2" type="error" message="funcionário já existe!" style="text-align: center"/>
+                   <a-alert v-if="active3" type="success" message="funcionário cadastrado com sucesso!"  style="text-align: center"/>
                 </a-form-item>
               </a-form>
             </div>
@@ -315,16 +313,10 @@ export default {
 
   mounted() {
     Funcionario.listar().then((resposta) => {
-      console.log(resposta.data);
+      // console.log(resposta.data);
       this.funcionarios = resposta.data;
       this.usuario = this.$route.params.cpf;
       this.user1(this.usuario);
-    });
-
-    Funcionario.listar1().then((resposta) => {
-      console.log(resposta.data);
-      this.requisições = resposta.data;
-      console.log(resposta.data);
     });
   },
   beforeCreate() {
@@ -351,9 +343,14 @@ export default {
     },
     user1(usuario) {
       this.users = this.funcionarios.find((user) => user.cpf === usuario);
-      console.log(this.users.nome);
+      // console.log(this.users.nome);
     },
     tabelaAparece() {
+      Funcionario.listar1().then((resposta) => {
+      // console.log(resposta.data);
+      this.requisições = resposta.data;
+      // console.log(resposta.data);
+    });
       this.active = true;
       this.active1 = false;
     },
@@ -374,7 +371,7 @@ export default {
       )[0];
       if (target) {
         target[column] = value;
-        console.log(value, "valor");
+        // console.log(value, "valor");
         this.requisições = newData;
       }
     },
@@ -384,7 +381,7 @@ export default {
         (item) => id_historico === item.id_historico
       )[0];
       this.editingKey = id_historico;
-      console.log(id_historico);
+      // console.log(id_historico);
       if (target) {
         target.editable = true;
         this.requisições = newData;
@@ -396,7 +393,7 @@ export default {
       const target = newData.filter(
         (item) => id_historico === item.id_historico
       )[0];
-      console.log(target, "target");
+      // console.log(target, "target");
       // const targetCache = newCacheData.filter(item => id_historico === item.id_historico)[0];
       // console.log(targetCache, 'targetCache');
 
@@ -413,7 +410,7 @@ export default {
         (item) => id_historico === item.id_historico
       )[0];
       this.editingKey = "";
-      console.log(target, "target do cancel");
+      // console.log(target, "target do cancel");
       if (target) {
         Object.assign(target);
         delete target.editable;
@@ -432,14 +429,17 @@ export default {
       this.cargo = "";
       this.nome = "";
     } else if (this.message === "cadastrado com sucesso!") {
+      this.active2 = false;
       this.active3 = true;
       this.cpf = "";
       this.senha = "";
       this.cargo = "";
       this.nome = "";
       console.log("deu certo , cadastrou");
-      document.location.reload(true);
+      // document.location.reload(true);
     }
+    this.messageError = "";
+    this.message = "";
   },
   },
 };
