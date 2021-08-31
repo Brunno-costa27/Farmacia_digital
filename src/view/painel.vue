@@ -5,7 +5,7 @@
       <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
         <a-sub-menu>
           <span slot="title"
-            ><a-icon type="user" /><span>{{ nome.nome }}</span></span
+            ><a-icon type="user" /><span>{{ users.nome }}</span></span
           >
         </a-sub-menu>
         <a-sub-menu key="sub2">
@@ -33,11 +33,13 @@
       <a-layout-content style="margin: 0 16px">
         <a-breadcrumb style="margin: 16px 0">
           <!-- <a-breadcrumb-item>usuário</a-breadcrumb-item> -->
-          <a-breadcrumb-item> Seja bem-vindo {{ nome.nome }}</a-breadcrumb-item>
+          <a-breadcrumb-item>
+            Seja bem-vindo {{ users.nome }}</a-breadcrumb-item
+          >
         </a-breadcrumb>
 
         <div
-          :style="{ padding: '24px', background: '#fff', minHeight: '360px' }"
+          :style="{ padding: '20px', background: '#fff', minHeight: '360px' }"
         >
           <div v-if="active">
             <a-table
@@ -109,61 +111,56 @@
             <a-button
               @click="precoFechar"
               type="danger"
-              style="margin-top: 20px"
+              style="margin-top: 20px max-width: 100%;"
             >
-              fechar
+              Fechar
             </a-button>
           </div>
-          <div>
-            <a-modal
-              v-model="modal2Visible"
-              title="Cadastro de funcionarios"
-              centered
-              @ok="() => (modal2Visible = false)"
-            >
-              <div>
-                <a-form :form="form" @submit="handleSubmit">
-                  <a-form-item v-bind="formItemLayout" label="Nome">
-                    <a-input v-model="nome" required />
-                  </a-form-item>
 
-                  <a-form-item
-                    v-bind="formItemLayout"
-                    label="cpf"
-                    has-feedback
-                    v-mask="'###.###.###-##'"
-                  >
-                    <a-input v-model="cpf" required />
-                  </a-form-item>
+          <a-modal
+            v-model="modal2Visible"
+            title="Cadastro de funcionarios"
+            centered
+            @ok="() => (modal2Visible = false)"
+          >
+            <div>
+              <a-form :form="form" @submit="handleSubmit">
+                <a-form-item v-bind="formItemLayout" label="Nome">
+                  <a-input v-model="nome" required />
+                </a-form-item>
 
-                  <a-form-item
-                    v-bind="formItemLayout"
-                    label="cargo"
-                    has-feedback
-                  >
-                    <a-input v-model="cargo" required />
-                  </a-form-item>
+                <a-form-item
+                  v-bind="formItemLayout"
+                  label="cpf"
+                  has-feedback
+                  v-mask="'###.###.###-##'"
+                >
+                  <a-input v-model="cpf" required />
+                </a-form-item>
 
-                  <a-form-item
-                    v-bind="formItemLayout"
-                    label="Senha"
-                    has-feedback
-                  >
-                    <a-input type="password" v-model="senha" required />
-                  </a-form-item>
+                <a-form-item v-bind="formItemLayout" label="cargo" has-feedback>
+                  <a-input v-model="cargo" required />
+                </a-form-item>
 
-                  <a-form-item v-bind="formItemLayout">
-                    <a-button type="primary" html-type="submit">
-                      Registrar
-                    </a-button>
-                  </a-form-item>
-                </a-form>
-              </div>
-            </a-modal>
-          </div>
+                <a-form-item v-bind="formItemLayout" label="Senha" has-feedback>
+                  <a-input type="password" v-model="senha" required />
+                </a-form-item>
+
+                <a-form-item v-bind="formItemLayout">
+                  <a-button type="primary" html-type="submit" @click="activeError">
+                    Registrar
+                    <div v-if="active2">
+                      
+                    </div>
+                  </a-button>
+                   <a-alert v-if="active2" type="error" v-text="messageError" style="text-align: center"/>
+                   <a-alert v-if="active3" type="success" v-text="message" style="text-align: center"/>
+                </a-form-item>
+              </a-form>
+            </div>
+          </a-modal>
         </div>
       </a-layout-content>
-      <a-layout-footer style="text-align: center"> footer </a-layout-footer>
     </a-layout>
   </a-layout>
 </template>
@@ -271,17 +268,20 @@ const columns = [
 export default {
   data() {
     return {
+      users: "",
       columns,
       editingKey: "",
       collapsed: true,
       active: false,
       active1: false,
+      active2: false,
+      active3: false,
       requisições,
       columnsFuncionarios,
       columnsCadastroPreco,
       funcionarios,
       usuario: "",
-        modal2Visible: false,
+      modal2Visible: false,
       nome: "",
       cpf: "",
       senha: "",
@@ -312,7 +312,7 @@ export default {
       },
     };
   },
-  
+
   mounted() {
     Funcionario.listar().then((resposta) => {
       console.log(resposta.data);
@@ -327,11 +327,11 @@ export default {
       console.log(resposta.data);
     });
   },
-   beforeCreate() {
+  beforeCreate() {
     this.form = this.$form.createForm(this, { name: "register" });
   },
   methods: {
-     handleSubmit(e) {
+    handleSubmit(e) {
       e.preventDefault();
       axios
         .post(`http://localhost:3333/funcionario`, {
@@ -343,16 +343,15 @@ export default {
         .then((res) => {
           this.messageError = res.data.error;
           this.message = res.data.message;
-          console.log(res.data.error);
           this.activeError();
         })
         .catch((e) => {
-          console.log(e.response.error);
+          console.log(e.response);
         });
     },
     user1(usuario) {
-      this.nome = this.funcionarios.find((user) => user.cpf === usuario);
-      console.log(this.nome.nome);
+      this.users = this.funcionarios.find((user) => user.cpf === usuario);
+      console.log(this.users.nome);
     },
     tabelaAparece() {
       this.active = true;
@@ -421,21 +420,28 @@ export default {
         this.requisições = newData;
       }
     },
-  },
   setModal1Visible(modal1Visible) {
-      this.modal1Visible = modal1Visible;
+    this.modal1Visible = modal1Visible;
     },
-    // activeError() {
-    //   if (this.messageError === "funcionario already exists") {
-    //     this.active = true;
-    //     this.cpf = "";
-    //     this.senha = "";
-    //     this.cargo = "";
-    //     this.nome1 = "";
-    //   } else if (this.message === "cadastrado com sucesso!") {
-    //     console.log("deu certo");
-    //   }
-    // },
+  activeError() {
+    if (this.messageError === "funcionario already exists") {
+      console.log("deu certo, já existe");
+      this.active2 = true;
+      this.cpf = "";
+      this.senha = "";
+      this.cargo = "";
+      this.nome = "";
+    } else if (this.message === "cadastrado com sucesso!") {
+      this.active3 = true;
+      this.cpf = "";
+      this.senha = "";
+      this.cargo = "";
+      this.nome = "";
+      console.log("deu certo , cadastrou");
+      document.location.reload(true);
+    }
+  },
+  },
 };
 </script>
 
