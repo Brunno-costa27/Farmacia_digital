@@ -223,9 +223,9 @@ const columnsCadastroPreco = [
 const columns = [
   {
     title: "id",
-    dataIndex: "id_historico",
-    width: "5%",
-    scopedSlots: { customRender: "id_historico" },
+    dataIndex: "id_login",
+    width: "17%",
+    scopedSlots: { customRender: "id_login" },
   },
   {
     title: "medicamento",
@@ -240,25 +240,27 @@ const columns = [
     scopedSlots: { customRender: "valor" },
   },
   {
-    title: "paciente",
-    dataIndex: "paciente",
-    width: "25%",
-    scopedSlots: { customRender: "paciente" },
+    title: "medico",
+    dataIndex: "medico",
+    width: "20%",
+    scopedSlots: { customRender: "medico" },
   },
   {
     title: "data",
-    dataIndex: "data_historico",
-    scopedSlots: { customRender: "data_historico" },
+    dataIndex: "create_date",
+    width: "10%",
+    scopedSlots: { customRender: "crcreate_date" },
   },
   {
-    title: "telefone",
-    dataIndex: "telefone",
-    width: "15%",
-    scopedSlots: { customRender: "telefone" },
+    title: "quantidade",
+    dataIndex: "quantidade",
+    width: "10%",
+    scopedSlots: { customRender: "quantidade" },
   },
   {
     title: "operation",
     dataIndex: "operation",
+    width: "9%",
     scopedSlots: { customRender: "operation" },
   },
 ];
@@ -321,7 +323,7 @@ export default {
     });
 
     Funcionario.listar1().then((resposta) => {
-      // console.log(resposta.data);
+      console.log(resposta.data);
       this.requisições = resposta.data;
       // console.log(resposta.data);
     });
