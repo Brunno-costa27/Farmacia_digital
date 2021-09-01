@@ -460,7 +460,12 @@ export default {
       this.cargo = "";
       this.nome = "";
       console.log("deu certo , cadastrou");
-      // document.location.reload(true);
+      Funcionario.listar().then((resposta) => {
+      // console.log(resposta.data);
+      this.funcionarios = resposta.data;
+      this.usuario = this.$route.params.cpf;
+      this.user1(this.usuario);
+    });
     }
     this.messageError = "";
     this.message = "";
