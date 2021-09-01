@@ -267,6 +267,7 @@ export default {
   data() {
     return {
       users: "",
+      date: "",
       columns,
       editingKey: "",
       collapsed: true,
@@ -318,6 +319,12 @@ export default {
       this.usuario = this.$route.params.cpf;
       this.user1(this.usuario);
     });
+
+    Funcionario.listar1().then((resposta) => {
+      // console.log(resposta.data);
+      this.requisições = resposta.data;
+      // console.log(resposta.data);
+    });
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "register" });
@@ -346,11 +353,6 @@ export default {
       // console.log(this.users.nome);
     },
     tabelaAparece() {
-      Funcionario.listar1().then((resposta) => {
-      // console.log(resposta.data);
-      this.requisições = resposta.data;
-      // console.log(resposta.data);
-    });
       this.active = true;
       this.active1 = false;
     },
@@ -396,12 +398,32 @@ export default {
       // console.log(target, "target");
       // const targetCache = newCacheData.filter(item => id_historico === item.id_historico)[0];
       // console.log(targetCache, 'targetCache');
-
+      console.log(target.paciente);
       if (target) {
         delete target.editable;
         this.requisições = newData;
         Object.assign(target);
       }
+      this.date = new Date();
+      axios
+        .post(`http://localhost:3333/requisicao`, {
+          id_historico: 6,
+          medicamento: target.medicamento,
+          valor: target.valor,
+          paciente: target.paciente,
+          data_historico: this.date.toLocaleDateString('pt-BR'),
+          telefone: target.telefone,
+          id_cpf: this.usuario
+        })
+        .then((res) => {
+          this.messageError = res.data.error;
+          this.message = res.data.message;
+          this.activeError();
+        })
+        .catch((e) => {
+          console.log(e.response);
+        });
+
       this.editingKey = "";
     },
     cancel(id_historico) {
