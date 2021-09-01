@@ -7,7 +7,7 @@ export default {
         return http.get('funcionario')
     },
     listar1:() => {
-        return http.get('requisicoes')
+        return http.get('requisicao')
     },
     salvar:(funcionario) => {
         return http.post('funcionario', funcionario)
