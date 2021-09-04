@@ -1,7 +1,7 @@
 <template>
   <a-layout id="components-layout-demo-side">
     <a-layout-sider v-model="collapsed" collapsible>
-      <div class="logo" />
+      <img src="../assets/farmacia.png" alt="não deu certo" id="logo">
       <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
         <a-sub-menu>
           <span slot="title"
@@ -13,17 +13,17 @@
           <a-menu-item>
             <!-- <router-link to="/preco">cadastrar preços</router-link>
             <router-view></router-view> -->
-            <a @click="precoAparece">cadastrar preços</a>
+            <a  @click="precoAparece">cadastrar preços</a>
           </a-menu-item>
           <a-menu-item>
             <!-- <router-link @click="tabelaAparece" to="/tabela">visualizar funcionarios</router-link>
             <router-view></router-view> -->
-            <a @click="tabelaAparece"> visualizar funcionarios</a>
+            <a id="visualizar_func" @click="tabelaAparece"> visualizar funcionarios</a>
           </a-menu-item>
           <a-menu-item>
             <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
             <router-view></router-view> -->
-            <a @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
+            <a id="cadastrar_func" @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
           </a-menu-item>
         </a-sub-menu>
       </a-menu>
@@ -33,7 +33,7 @@
       <a-layout-content style="margin: 0 16px">
         <a-breadcrumb style="margin: 16px 0">
           <!-- <a-breadcrumb-item>usuário</a-breadcrumb-item> -->
-          <a-breadcrumb-item>
+          <a-breadcrumb-item id="name">
             Seja bem-vindo {{ users.nome }}</a-breadcrumb-item
           >
         </a-breadcrumb>
@@ -385,7 +385,8 @@ export default {
         (item) => id_historico === item.id_historico
       )[0];
       this.editingKey = id_historico;
-      // console.log(id_historico);
+      console.log(target.valor = 'R$');
+
       if (target) {
         target.editable = true;
         this.requisições = newData;
@@ -409,7 +410,7 @@ export default {
       this.date = new Date();
       axios
         .post(`http://localhost:3333/requisicao`, {
-          id_historico: 6,
+          id_historico: 7,
           medicamento: target.medicamento,
           valor: target.valor,
           paciente: target.paciente,
@@ -485,4 +486,13 @@ export default {
   display: flex;
   width: 100%;
 }
+
+img{
+  width: 100%;
+}
+
+#name{
+  font-size: 30px;
+}
+
 </style>
