@@ -18,12 +18,12 @@
           <a-menu-item>
             <!-- <router-link @click="tabelaAparece" to="/tabela">visualizar funcionarios</router-link>
             <router-view></router-view> -->
-            <a id="visualizar_func" @click="tabelaAparece"> visualizar funcionarios</a>
+            <a  @click="tabelaAparece"> visualizar funcionarios</a>
           </a-menu-item>
           <a-menu-item>
             <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
             <router-view></router-view> -->
-            <a id="cadastrar_func" @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
+            <a  @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
           </a-menu-item>
         </a-sub-menu>
       </a-menu>
@@ -41,6 +41,16 @@
         <div
           :style="{ padding: '20px', background: '#fff', minHeight: '360px' }"
         >
+        <div id="inform" v-if="active_boletim">
+         <div>
+          <h1 id="center_boletin">Boletim covid</h1>
+          <h1 id="texto_boletim">Estado:{{Estado}}</h1>
+          <h1 id="texto_boletim">Casos:{{casosCovid}}</h1>
+          <h1 id="texto_boletim">Mortes:{{mortes}}</h1>
+          <h1 id="texto_boletim">Data da última atualização:{{data_padrao}}</h1>
+         </div>
+        </div>
+
           <div v-if="active">
             <a-table
               :columns="columnsFuncionarios"
@@ -268,6 +278,13 @@ const columns = [
 export default {
   data() {
     return {
+      dadosCovid: '',
+      data_padrao: '',
+      converter_data: '',
+      Estado: '',
+      casosCovid: '',
+      data_horas: '',
+      mortes: '',
       users: "",
       date: "",
       columns,
@@ -277,6 +294,7 @@ export default {
       active1: false,
       active2: false,
       active3: false,
+      active_boletim: true,
       requisições,
       columnsFuncionarios,
       columnsCadastroPreco,
@@ -323,10 +341,29 @@ export default {
     });
 
     Funcionario.listar1().then((resposta) => {
-      console.log(resposta.data);
+      // console.log(resposta.data);
       this.requisições = resposta.data;
       // console.log(resposta.data);
     });
+
+    axios.get('https://covid19-brazil-api.vercel.app/api/report/v1').then((res) => {
+      this.dadosCovid = res.data;
+      // console.log(res.data);
+      for (const key in this.dadosCovid) {
+       let valor = this.dadosCovid[key]
+      for (const key1 in valor) {
+          if(valor[key1].uid === 24){
+            // console.log(valor[key1].state);
+            this.Estado = valor[key1].state;
+            this.casosCovid = valor[key1].cases;
+            this.mortes = valor[key1].deaths;
+            this.data_horas = valor[key1].datetime;
+            this.converter_data = this.data_horas.slice(0,10);
+            this.data_padrao = this.converter_data.split('-').reverse().join('/');
+          }
+        }
+      }
+    })
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "register" });
@@ -357,16 +394,21 @@ export default {
     tabelaAparece() {
       this.active = true;
       this.active1 = false;
+      this.active_boletim = false;
     },
     tabelaFechar() {
       this.active = false;
+      this.active_boletim = true;
     },
     precoAparece() {
       this.active1 = true;
       this.active = false;
+      this.active_boletim = false;
     },
     precoFechar() {
       this.active1 = false;
+      this.active_boletim = true;
+
     },
     handleChange(value, id_historico, column) {
       const newData = [...this.requisições];
@@ -495,4 +537,28 @@ img{
   font-size: 30px;
 }
 
+#inform{
+  /* margin-top: 60px; */
+  background-color: red;
+  border-radius: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column; 
+  align-items: center;
+}
+
+#center_boletin{
+ 
+  text-decoration: underline;
+  color: white;
+  font-size:30px;
+}
+
+#texto_boletim{
+  text-decoration: none;
+  color: white;
+  font-size:30px;
+
+}
 </style>
