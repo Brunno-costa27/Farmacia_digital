@@ -1,7 +1,7 @@
 <template>
   <a-layout id="components-layout-demo-side">
     <a-layout-sider v-model="collapsed" collapsible>
-      <img src="../assets/farmacia.png" alt="não deu certo" id="logo">
+      <img src="../assets/farmacia.png" alt="não deu certo" id="logo" />
       <a-menu theme="dark" :default-selected-keys="['1']" mode="inline">
         <a-sub-menu>
           <span slot="title"
@@ -13,17 +13,21 @@
           <a-menu-item>
             <!-- <router-link to="/preco">cadastrar preços</router-link>
             <router-view></router-view> -->
-            <a  @click="precoAparece">cadastrar preços</a>
+            <a @click="precoAparece">cadastrar preços</a>
           </a-menu-item>
           <a-menu-item>
             <!-- <router-link @click="tabelaAparece" to="/tabela">visualizar funcionarios</router-link>
             <router-view></router-view> -->
-            <a  @click="tabelaAparece"> visualizar funcionarios</a>
+            <a @click="tabelaAparece"> visualizar funcionarios</a>
           </a-menu-item>
           <a-menu-item>
             <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
             <router-view></router-view> -->
-            <a  @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
+            <a @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
+          </a-menu-item>
+           <a-menu-item>
+             <router-link to="/login">Sair</router-link>
+            <router-view></router-view>
           </a-menu-item>
         </a-sub-menu>
       </a-menu>
@@ -34,22 +38,27 @@
         <a-breadcrumb style="margin: 16px 0">
           <!-- <a-breadcrumb-item>usuário</a-breadcrumb-item> -->
           <a-breadcrumb-item id="name">
-            Seja bem-vindo {{ users.nome }}</a-breadcrumb-item
+            <div id="voltar">
+            Seja bem-vindo {{ users.nome }}
+            </div>
+          </a-breadcrumb-item
           >
         </a-breadcrumb>
 
         <div
           :style="{ padding: '20px', background: '#fff', minHeight: '360px' }"
         >
-        <div id="inform" v-if="active_boletim">
-         <div>
-          <h1 id="center_boletin">Boletim covid</h1>
-          <h1 id="texto_boletim">Estado:{{Estado}}</h1>
-          <h1 id="texto_boletim">Casos:{{casosCovid}}</h1>
-          <h1 id="texto_boletim">Mortes:{{mortes}}</h1>
-          <h1 id="texto_boletim">Data da última atualização:{{data_padrao}}</h1>
-         </div>
-        </div>
+          <div id="inform" v-if="active_boletim">
+            <div>
+              <h1 id="center_boletin">Boletim covid</h1>
+              <h1 id="texto_boletim">Estado:{{ Estado }}</h1>
+              <h1 id="texto_boletim">Casos:{{ casosCovid }}</h1>
+              <h1 id="texto_boletim">Mortes:{{ mortes }}</h1>
+              <h1 id="texto_boletim">
+                Data da última atualização:{{ data_padrao }}
+              </h1>
+            </div>
+          </div>
 
           <div v-if="active">
             <a-table
@@ -131,7 +140,11 @@
             v-model="modal2Visible"
             title="Cadastro de funcionarios"
             centered
-            @ok="() => (modal2Visible = false, active2 = false, active3 = false)"
+            @ok="
+              () => (
+                (modal2Visible = false), (active2 = false), (active3 = false)
+              )
+            "
           >
             <div>
               <a-form :form="form" @submit="handleSubmit">
@@ -157,12 +170,25 @@
                 </a-form-item>
 
                 <a-form-item v-bind="formItemLayout">
-                  <a-button type="primary" html-type="submit" @click="activeError">
+                  <a-button
+                    type="primary"
+                    html-type="submit"
+                    @click="activeError"
+                  >
                     Registrar
-                    
                   </a-button>
-                   <a-alert v-if="active2" type="error" message="funcionário já existe!" style="text-align: center"/>
-                   <a-alert v-if="active3" type="success" message="funcionário cadastrado com sucesso!"  style="text-align: center"/>
+                  <a-alert
+                    v-if="active2"
+                    type="error"
+                    message="funcionário já existe!"
+                    style="text-align: center"
+                  />
+                  <a-alert
+                    v-if="active3"
+                    type="success"
+                    message="funcionário cadastrado com sucesso!"
+                    style="text-align: center"
+                  />
                 </a-form-item>
               </a-form>
             </div>
@@ -278,13 +304,13 @@ const columns = [
 export default {
   data() {
     return {
-      dadosCovid: '',
-      data_padrao: '',
-      converter_data: '',
-      Estado: '',
-      casosCovid: '',
-      data_horas: '',
-      mortes: '',
+      dadosCovid: "",
+      data_padrao: "",
+      converter_data: "",
+      Estado: "",
+      casosCovid: "",
+      data_horas: "",
+      mortes: "",
       users: "",
       date: "",
       columns,
@@ -333,6 +359,7 @@ export default {
   },
 
   mounted() {
+
     Funcionario.listar().then((resposta) => {
       // console.log(resposta.data);
       this.funcionarios = resposta.data;
@@ -346,29 +373,37 @@ export default {
       // console.log(resposta.data);
     });
 
-    axios.get('https://covid19-brazil-api.vercel.app/api/report/v1').then((res) => {
-      this.dadosCovid = res.data;
-      // console.log(res.data);
-      for (const key in this.dadosCovid) {
-       let valor = this.dadosCovid[key]
-      for (const key1 in valor) {
-          if(valor[key1].uid === 24){
-            // console.log(valor[key1].state);
-            this.Estado = valor[key1].state;
-            this.casosCovid = valor[key1].cases;
-            this.mortes = valor[key1].deaths;
-            this.data_horas = valor[key1].datetime;
-            this.converter_data = this.data_horas.slice(0,10);
-            this.data_padrao = this.converter_data.split('-').reverse().join('/');
+
+    axios
+      .get("https://covid19-brazil-api.vercel.app/api/report/v1")
+      .then((res) => {
+        this.dadosCovid = res.data;
+        // console.log(res.data);
+        for (const key in this.dadosCovid) {
+          let valor = this.dadosCovid[key];
+          for (const key1 in valor) {
+            if (valor[key1].uid === 24) {
+              // console.log(valor[key1].state);
+              this.Estado = valor[key1].state;
+              this.casosCovid = valor[key1].cases;
+              this.mortes = valor[key1].deaths;
+              this.data_horas = valor[key1].datetime;
+              this.converter_data = this.data_horas.slice(0, 10);
+              this.data_padrao = this.converter_data
+                .split("-")
+                .reverse()
+                .join("/");
+            }
           }
         }
-      }
-    })
+      });
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "register" });
   },
   methods: {
+
+    
     handleSubmit(e) {
       e.preventDefault();
       axios
@@ -387,6 +422,7 @@ export default {
           console.log(e.response);
         });
     },
+
     user1(usuario) {
       this.users = this.funcionarios.find((user) => user.cpf === usuario);
       // console.log(this.users.nome);
@@ -408,7 +444,6 @@ export default {
     precoFechar() {
       this.active1 = false;
       this.active_boletim = true;
-
     },
     handleChange(value, id_historico, column) {
       const newData = [...this.requisições];
@@ -427,7 +462,7 @@ export default {
         (item) => id_historico === item.id_historico
       )[0];
       this.editingKey = id_historico;
-      console.log(target.valor = 'R$');
+      console.log((target.valor = "R$"));
 
       if (target) {
         target.editable = true;
@@ -456,9 +491,9 @@ export default {
           medicamento: target.medicamento,
           valor: target.valor,
           paciente: target.paciente,
-          data_historico: this.date.toLocaleDateString('pt-BR'),
+          data_historico: this.date.toLocaleDateString("pt-BR"),
           telefone: target.telefone,
-          id_cpf: this.usuario
+          id_cpf: this.usuario,
         })
         .then((res) => {
           this.messageError = res.data.error;
@@ -484,35 +519,35 @@ export default {
         this.requisições = newData;
       }
     },
-  setModal1Visible(modal1Visible) {
-    this.modal1Visible = modal1Visible;
+    setModal1Visible(modal1Visible) {
+      this.modal1Visible = modal1Visible;
     },
-  activeError() {
-    if (this.messageError === "funcionario already exists") {
-      console.log("deu certo, já existe");
-      this.active2 = true;
-      this.cpf = "";
-      this.senha = "";
-      this.cargo = "";
-      this.nome = "";
-    } else if (this.message === "cadastrado com sucesso!") {
-      this.active2 = false;
-      this.active3 = true;
-      this.cpf = "";
-      this.senha = "";
-      this.cargo = "";
-      this.nome = "";
-      console.log("deu certo , cadastrou");
-      Funcionario.listar().then((resposta) => {
-      // console.log(resposta.data);
-      this.funcionarios = resposta.data;
-      this.usuario = this.$route.params.cpf;
-      this.user1(this.usuario);
-    });
-    }
-    this.messageError = "";
-    this.message = "";
-  },
+    activeError() {
+      if (this.messageError === "funcionario already exists") {
+        console.log("deu certo, já existe");
+        this.active2 = true;
+        this.cpf = "";
+        this.senha = "";
+        this.cargo = "";
+        this.nome = "";
+      } else if (this.message === "cadastrado com sucesso!") {
+        this.active2 = false;
+        this.active3 = true;
+        this.cpf = "";
+        this.senha = "";
+        this.cargo = "";
+        this.nome = "";
+        console.log("deu certo , cadastrou");
+        Funcionario.listar().then((resposta) => {
+          // console.log(resposta.data);
+          this.funcionarios = resposta.data;
+          this.usuario = this.$route.params.cpf;
+          this.user1(this.usuario);
+        });
+      }
+      this.messageError = "";
+      this.message = "";
+    },
   },
 };
 </script>
@@ -529,36 +564,44 @@ export default {
   width: 100%;
 }
 
-img{
+img {
   width: 100%;
 }
 
-#name{
+#name {
   font-size: 30px;
 }
 
-#inform{
+#inform {
   /* margin-top: 60px; */
   background-color: red;
   border-radius: 5px;
   width: 100%;
   display: flex;
   justify-content: center;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
 }
 
-#center_boletin{
- 
+#center_boletin {
   text-decoration: underline;
   color: white;
-  font-size:30px;
+  font-size: 30px;
 }
 
-#texto_boletim{
+#texto_boletim {
   text-decoration: none;
   color: white;
-  font-size:30px;
+  font-size: 30px;
+}
+
+#voltar{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 
 }
+
 </style>

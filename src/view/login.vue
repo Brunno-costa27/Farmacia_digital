@@ -52,6 +52,10 @@ export default {
     };
   },
 
+  mounted(){
+    this.login()
+  },
+
   methods: {
     handleSubmit(e) {
       e.preventDefault();
@@ -62,9 +66,9 @@ export default {
         })
         .then((res) => {
           this.message = res.data.message;
-          console.log(res);
-          console.log(res.data);
-          console.log(res.data.message);
+          // console.log(res);
+          // console.log(res.data);
+          // console.log(res.data.message);
           this.activeError();
         })
         .catch((e) => {
@@ -81,9 +85,10 @@ export default {
         this.$router.push({ name: 'painel' , params: {cpf: this.cpf}});
       }
     },
+
     login(){
+      // console.log(Funcionario.user);
       Funcionario.user = this.cpf;
-      console.log(Funcionario.user);
     },
   },
 };
