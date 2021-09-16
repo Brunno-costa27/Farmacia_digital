@@ -1,44 +1,66 @@
 
 <template>
-  <a-form
-    id="components-form-demo-normal-login"
-    :form="form"
-    class="login-form"
-    @submit="handleSubmit"
-    @click="activeError"
-  >
-    <a-form-item>
-      <a-avatar :size="64" icon="user" id="avatar" />
-      <a-input placeholder="Insira seu cpf" type="text" v-mask="'###.###.###-##'" v-model="cpf" required>
-        <a-icon slot="prefix" type="user" style="color: rgba(0, 0, 0, 0.25)" />
-      </a-input>
-    </a-form-item>
+  <div id="container">
+    <a-form
+      id="components-form-demo-normal-login"
+      :form="form"
+      class="login-form"
+      @submit="handleSubmit"
+      @click="activeError"
+    >
+      <a-form-item>
+        <a-avatar :size="64" icon="user" id="avatar" />
+        <a-input
+          placeholder="Insira seu cpf"
+          type="text"
+          v-mask="'###.###.###-##'"
+          v-model="cpf"
+          required
+        >
+          <a-icon
+            slot="prefix"
+            type="user"
+            style="color: rgba(0, 0, 0, 0.25)"
+          />
+        </a-input>
+      </a-form-item>
 
-    <a-form-item>
-      <a-input type="password" placeholder="Insira uma senha" v-model="senha" required>
-        <a-icon slot="prefix" type="lock" style="color: rgba(0, 0, 0, 0.25)" />
-      </a-input>
-    </a-form-item>
-    <a-form-item>
-      <a-button
-        style="background-color: white"
-        html-type="submit"
-        class="login-form-button"
-      >
-      Entrar
-        <div v-if="active">
-          <router-link  to="/painel"></router-link>
-          <router-view />
-        </div>
-      </a-button>
-    </a-form-item>
-    <a-alert v-if="active" type="error" v-text="message" />
-  </a-form>
+      <a-form-item>
+        <a-input
+          type="password"
+          placeholder="Insira uma senha"
+          v-model="senha"
+          required
+        >
+          <a-icon
+            slot="prefix"
+            type="lock"
+            style="color: rgba(0, 0, 0, 0.25)"
+          />
+        </a-input>
+      </a-form-item>
+      <a-form-item>
+        <a-button
+          style="background-color: white"
+          color="white"
+          html-type="submit"
+          class="login-form-button"
+        >
+          Entrar
+          <div v-if="active">
+            <router-link to="/painel"></router-link>
+            <router-view />
+          </div>
+        </a-button>
+      </a-form-item>
+      <a-alert v-if="active" type="error" v-text="message" />
+    </a-form>
+  </div>
 </template>
 
 <script>
 import axios from "axios";
-import Funcionario from '../services/funcionarios'
+import Funcionario from "../services/funcionarios";
 export default {
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "normal_login" });
@@ -52,8 +74,8 @@ export default {
     };
   },
 
-  mounted(){
-    this.login()
+  mounted() {
+    this.login();
   },
 
   methods: {
@@ -82,11 +104,11 @@ export default {
         this.senha = "";
       } else if (this.message === "seja bem vindo!") {
         this.login();
-        this.$router.push({ name: 'painel' , params: {cpf: this.cpf}});
+        this.$router.push({ name: "painel", params: { cpf: this.cpf } });
       }
     },
 
-    login(){
+    login() {
       // console.log(Funcionario.user);
       Funcionario.user = this.cpf;
     },
@@ -102,8 +124,18 @@ export default {
 }
 #components-form-demo-normal-login .login-form-button {
   width: 100%;
+  color: #aeb0b4;
 }
+
 #avatar {
   margin-bottom: 30px;
+  background-color: #2c3e50;
+}
+
+#container {
+  background-color: white;
+  padding: 30px;
+  height: 400px;
+  border-radius: 10px;
 }
 </style>
