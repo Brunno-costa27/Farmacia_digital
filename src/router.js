@@ -20,8 +20,12 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: login  
-  },
+      component: login,  
+    },
+    {
+      path: '/',
+      redirect: 'login'  
+    },
     
     // {
     //   path: '/tabela',
