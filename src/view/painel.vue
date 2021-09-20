@@ -367,8 +367,8 @@ export default {
       this.user1(this.usuario);
     });
 
-    Funcionario.listar1().then((resposta) => {
-      // console.log(resposta.data);
+    axios.get('http://localhost:8081/requisicoes').then((resposta) => {
+      console.log(resposta.data);
       this.requisições = resposta.data;
       // console.log(resposta.data);
     });
