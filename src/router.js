@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import login from './view/login.vue';
-// import tabela from './view/tabela.vue';
+import tabela from './view/tabela.vue';
 // import preco from './view/preco.vue';
 import painel from './view/painel.vue';
 // import cadastroFuncionario from './view/cadastroFuncionario.vue';
@@ -27,21 +27,11 @@ const router = new Router({
       redirect: 'login'  
     },
     
-    // {
-    //   path: '/tabela',
-    //   name: 'tabela',
-    //   component: tabela,
-    //   beforeEnter: (to , from , next)  => {
-    //     if (!Funcionario.user) {
-    //       next({
-    //         name: "login"
-    //       })
-    //     } else {
-    //       next();
-    //     }
-    //   } 
-
-    // },
+    {
+      path: '/tabela',
+      name: 'tabela',
+      component: tabela,
+    },
 
     // {
     //   path: '/preco',

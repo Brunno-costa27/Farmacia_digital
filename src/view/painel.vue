@@ -87,7 +87,7 @@
               id="tabela"
             >
               <template
-                v-for="col in ['valor']"
+                v-for="col in ['valor', 'telefone']"
                 :slot="col"
                 slot-scope="text, record"
               >
@@ -98,7 +98,7 @@
                     :value="text"
                     @change="
                       (e) =>
-                        handleChange(e.target.value, record.id_historico, col)
+                        handleChange(e.target.value, record.key, col)
                     "
                   />
                   <template v-else>
@@ -109,10 +109,10 @@
               <template slot="operation" slot-scope="text, record">
                 <div class="editable-row-operations">
                   <span v-if="record.editable">
-                    <a @click="() => save(record.id_historico)">Salvar</a>
+                    <a @click="() => save(record.key)">Salvar</a>
                     <a-popconfirm
                       title="Certifique-se de cancelar?"
-                      @confirm="() => cancel(record.id_historico)"
+                      @confirm="() => cancel(record.key)"
                     >
                       <a>Cancelar</a>
                     </a-popconfirm>
@@ -120,7 +120,7 @@
                   <span v-else>
                     <a
                       :disabled="editingKey !== ''"
-                      @click="() => edit(record.id_historico)"
+                      @click="() => edit(record.key)"
                       >Editar</a
                     >
                   </span>
@@ -225,43 +225,43 @@ const columnsFuncionarios = [
   },
 ];
 
-const columnsCadastroPreco = [
-  {
-    title: "medicamento",
-    dataIndex: "medicamento",
-    width: "15%",
-    scopedSlots: { customRender: "medicamento" },
-  },
-  {
-    title: "valor",
-    dataIndex: "valor",
-    width: "15%",
-    scopedSlots: { customRender: "valor" },
-  },
-  {
-    title: "paciente",
-    dataIndex: "paciente",
-    width: "40%",
-    scopedSlots: { customRender: "paciente" },
-  },
-  {
-    title: "data",
-    dataIndex: "data_historico",
-    scopedSlots: { customRender: "data_historico" },
-  },
-  {
-    title: "telefone",
-    dataIndex: "telefone",
-    scopedSlots: { customRender: "telefone" },
-  },
-];
+// const columnsCadastroPreco = [
+//   {
+//     title: "medicamento",
+//     dataIndex: "medicamento",
+//     width: "15%",
+//     scopedSlots: { customRender: "medicamento" },
+//   },
+//   {
+//     title: "valor",
+//     dataIndex: "valor",
+//     width: "15%",
+//     scopedSlots: { customRender: "valor" },
+//   },
+//   {
+//     title: "paciente",
+//     dataIndex: "paciente",
+//     width: "40%",
+//     scopedSlots: { customRender: "paciente" },
+//   },
+//   {
+//     title: "data",
+//     dataIndex: "data_historico",
+//     scopedSlots: { customRender: "data_historico" },
+//   },
+//   {
+//     title: "telefone",
+//     dataIndex: "telefone",
+//     scopedSlots: { customRender: "telefone" },
+//   },
+// ];
 
 const columns = [
   {
-    title: "id",
-    dataIndex: "id_login",
+    title: "id_historico",
+    dataIndex: "id_historico",
     width: "17%",
-    scopedSlots: { customRender: "id_login" },
+    scopedSlots: { customRender: "id_historico" },
   },
   {
     title: "medicamento",
@@ -278,20 +278,20 @@ const columns = [
   {
     title: "medico",
     dataIndex: "medico",
-    width: "20%",
-    scopedSlots: { customRender: "medico" },
-  },
-  {
-    title: "data",
-    dataIndex: "create_date",
     width: "10%",
-    scopedSlots: { customRender: "crcreate_date" },
+    scopedSlots: { customRender: "medico" },
   },
   {
     title: "quantidade",
     dataIndex: "quantidade",
-    width: "10%",
+    width: "7%",
     scopedSlots: { customRender: "quantidade" },
+  },
+  {
+    title: "telefone",
+    dataIndex: "telefone",
+    width: "10%",
+    scopedSlots: { customRender: "telefone" },
   },
   {
     title: "operation",
@@ -314,6 +314,7 @@ export default {
       users: "",
       date: "",
       columns,
+      data: [],
       editingKey: "",
       collapsed: true,
       active: false,
@@ -323,7 +324,7 @@ export default {
       active_boletim: true,
       requisições,
       columnsFuncionarios,
-      columnsCadastroPreco,
+      // columnsCadastroPreco,
       funcionarios,
       usuario: "",
       modal2Visible: false,
@@ -369,7 +370,17 @@ export default {
 
     axios.get('http://localhost:8081/requisicoes').then((resposta) => {
       console.log(resposta.data);
-      this.requisições = resposta.data;
+      this.data = resposta.data;
+      for (let i = 0; i < 100; i++) {
+  this.requisições.push({
+    key: i,
+    id_historico: this.data[i].id_login,
+    medicamento: this.data[i].medicamento,
+    quantidade: this.data[i].quantidade,
+    medico: this.data[i].medico
+  });
+}
+
       // console.log(resposta.data);
     });
 
@@ -445,10 +456,10 @@ export default {
       this.active1 = false;
       this.active_boletim = true;
     },
-    handleChange(value, id_historico, column) {
+    handleChange(value, key, column) {
       const newData = [...this.requisições];
       const target = newData.filter(
-        (item) => id_historico === item.id_historico
+        (item) => key === item.key
       )[0];
       if (target) {
         target[column] = value;
@@ -456,27 +467,27 @@ export default {
         this.requisições = newData;
       }
     },
-    edit(id_historico) {
+    edit(key) {
       const newData = [...this.requisições];
       const target = newData.filter(
-        (item) => id_historico === item.id_historico
+        (item) => key === item.key
       )[0];
-      this.editingKey = id_historico;
-      console.log((target.valor = "R$"));
+      this.editingKey = key;
+      console.log(target);
 
       if (target) {
         target.editable = true;
         this.requisições = newData;
       }
     },
-    save(id_historico) {
+    save(key) {
       const newData = [...this.requisições];
       // const newCacheData = [...this.cacheData];
       const target = newData.filter(
-        (item) => id_historico === item.id_historico
+        (item) => key === item.key
       )[0];
       // console.log(target, "target");
-      // const targetCache = newCacheData.filter(item => id_historico === item.id_historico)[0];
+      // const targetCache = newCacheData.filter(item => key === item.key)[0];
       // console.log(targetCache, 'targetCache');
       console.log(target.paciente);
       if (target) {
@@ -487,10 +498,9 @@ export default {
       this.date = new Date();
       axios
         .post(`http://localhost:3333/requisicao`, {
-          id_historico: 7,
+          id_historico: target.id_historico,
           medicamento: target.medicamento,
           valor: target.valor,
-          paciente: target.paciente,
           data_historico: this.date.toLocaleDateString("pt-BR"),
           telefone: target.telefone,
           id_cpf: this.usuario,
@@ -506,10 +516,10 @@ export default {
 
       this.editingKey = "";
     },
-    cancel(id_historico) {
+    cancel(key) {
       const newData = [...this.requisições];
       const target = newData.filter(
-        (item) => id_historico === item.id_historico
+        (item) => key === item.key
       )[0];
       this.editingKey = "";
       // console.log(target, "target do cancel");
