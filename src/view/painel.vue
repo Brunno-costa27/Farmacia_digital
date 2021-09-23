@@ -413,12 +413,30 @@ export default {
     this.form = this.$form.createForm(this, { name: "register" });
   },
   methods: {
+//     atualiza(){
+//        axios.get('http://localhost:8081/requisicoes').then((resposta) => {
+//       console.log(resposta.data);
+//       this.data = resposta.data;
+//       const tamanho = this.data.length;
+//       console.log(tamanho);
+//       for (let i = 0; i < 100; i++) {
+//   this.requisições.push({
+//     key: i,
+//     id_historico: this.data[i].id_login,
+//     medicamento: this.data[i].medicamento,
+//     quantidade: this.data[i].quantidade,
+//     medico: this.data[i].medico
+//   });
+// }
 
+//       // console.log(resposta.data);
+//     });
+//     },
     
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post(`http://localhost:3333/funcionario`, {
+        .post(`http://pacienteweb.brazilsouth.cloudapp.azure.com:3333/funcionario`, {
           nome: this.nome,
           cpf: this.cpf,
           senha: this.senha,
