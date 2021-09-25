@@ -13,7 +13,7 @@
           <a-menu-item>
             <!-- <router-link to="/preco">cadastrar preços</router-link>
             <router-view></router-view> -->
-            <a @click="precoAparece">cadastrar preços</a>
+            <a @click="precoAparece" v-on:click="atualiza">cadastrar preços</a>
           </a-menu-item>
           <a-menu-item>
             <!-- <router-link @click="tabelaAparece" to="/tabela">visualizar funcionarios</router-link>
@@ -25,8 +25,8 @@
             <router-view></router-view> -->
             <a @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
           </a-menu-item>
-           <a-menu-item>
-             <router-link to="/login">Sair</router-link>
+          <a-menu-item>
+            <router-link to="/login">Sair</router-link>
             <router-view></router-view>
           </a-menu-item>
         </a-sub-menu>
@@ -38,11 +38,8 @@
         <a-breadcrumb style="margin: 16px 0">
           <!-- <a-breadcrumb-item>usuário</a-breadcrumb-item> -->
           <a-breadcrumb-item id="name">
-            <div id="voltar">
-            Seja bem-vindo {{ users.nome }}
-            </div>
-          </a-breadcrumb-item
-          >
+            <div id="voltar">Seja bem-vindo {{ users.nome }}</div>
+          </a-breadcrumb-item>
         </a-breadcrumb>
 
         <div
@@ -97,8 +94,7 @@
                     style="margin: -5px 0"
                     :value="text"
                     @change="
-                      (e) =>
-                        handleChange(e.target.value, record.key, col)
+                      (e) => handleChange(e.target.value, record.key, col)
                     "
                   />
                   <template v-else>
@@ -203,6 +199,7 @@ import Funcionario from "../services/funcionarios";
 import axios from "axios";
 const funcionarios = [];
 const requisições = [];
+
 
 const columnsFuncionarios = [
   {
@@ -315,6 +312,8 @@ export default {
       date: "",
       columns,
       data: [],
+      arrayAtualizado: [],
+      precoLancado: [],
       editingKey: "",
       collapsed: true,
       active: false,
@@ -360,7 +359,6 @@ export default {
   },
 
   mounted() {
-
     Funcionario.listar().then((resposta) => {
       // console.log(resposta.data);
       this.funcionarios = resposta.data;
@@ -368,75 +366,67 @@ export default {
       this.user1(this.usuario);
     });
 
-    axios.get('http://localhost:8081/requisicoes').then((resposta) => {
-      console.log(resposta.data);
+    axios.get("http://localhost:8081/requisicoes").then((resposta) => {
       this.data = resposta.data;
-      for (let i = 0; i < 100; i++) {
-  this.requisições.push({
-    key: i,
-    id_historico: this.data[i].id_login,
-    medicamento: this.data[i].medicamento,
-    quantidade: this.data[i].quantidade,
-    medico: this.data[i].medico
-  });
-}
+      console.log(this.data.length);
+      console.log(this.arrayAtualizado.length)
+      for (let i = 0; i < this.data.length; i++) {
+        this.requisições.push({
+          key: i,
+          id_cadastro: this.data[i].id_cadastro,
+          id_historico: this.data[i].id_login,
+          medicamento: this.data[i].medicamento,
+          quantidade: this.data[i].quantidade,
+          medico: this.data[i].medico,
+          create_date: this.data[i].create_date,
+        });
+      }
 
-      // console.log(resposta.data);
+
+
+      // console.log(this.data.length);
+      console.log(this.requisições);
     });
 
-
-    axios
-      .get("https://covid19-brazil-api.vercel.app/api/report/v1")
-      .then((res) => {
-        this.dadosCovid = res.data;
-        // console.log(res.data);
-        for (const key in this.dadosCovid) {
-          let valor = this.dadosCovid[key];
-          for (const key1 in valor) {
-            if (valor[key1].uid === 24) {
-              // console.log(valor[key1].state);
-              this.Estado = valor[key1].state;
-              this.casosCovid = valor[key1].cases;
-              this.mortes = valor[key1].deaths;
-              this.data_horas = valor[key1].datetime;
-              this.converter_data = this.data_horas.slice(0, 10);
-              this.data_padrao = this.converter_data
-                .split("-")
-                .reverse()
-                .join("/");
-            }
-          }
-        }
-      });
+    // axios
+    //   .get("https://covid19-brazil-api.vercel.app/api/report/v1")
+    //   .then((res) => {
+    //     this.dadosCovid = res.data;
+    //     // console.log(res.data);
+    //     for (const key in this.dadosCovid) {
+    //       let valor = this.dadosCovid[key];
+    //       for (const key1 in valor) {
+    //         if (valor[key1].uid === 24) {
+    //           // console.log(valor[key1].state);
+    //           this.Estado = valor[key1].state;
+    //           this.casosCovid = valor[key1].cases;
+    //           this.mortes = valor[key1].deaths;
+    //           this.data_horas = valor[key1].datetime;
+    //           this.converter_data = this.data_horas.slice(0, 10);
+    //           this.data_padrao = this.converter_data
+    //             .split("-")
+    //             .reverse()
+    //             .join("/");
+    //         }
+    //       }
+    //     }
+    //   });
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "register" });
   },
   methods: {
-//     atualiza(){
-//        axios.get('http://localhost:8081/requisicoes').then((resposta) => {
-//       console.log(resposta.data);
-//       this.data = resposta.data;
-//       const tamanho = this.data.length;
-//       console.log(tamanho);
-//       for (let i = 0; i < 100; i++) {
-//   this.requisições.push({
-//     key: i,
-//     id_historico: this.data[i].id_login,
-//     medicamento: this.data[i].medicamento,
-//     quantidade: this.data[i].quantidade,
-//     medico: this.data[i].medico
-//   });
-// }
+    atualiza() {
+      // this.arrayAtualizado = this.requisições;
+      for (let i = 0; i < this.precoLancado.length; i++) {
+        console.log(this.precoLancado[i]);
+      }
+    },
 
-//       // console.log(resposta.data);
-//     });
-//     },
-    
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post(`http://pacienteweb.brazilsouth.cloudapp.azure.com:3333/funcionario`, {
+        .post(`http://localhost:3333/funcionario`, {
           nome: this.nome,
           cpf: this.cpf,
           senha: this.senha,
@@ -476,9 +466,7 @@ export default {
     },
     handleChange(value, key, column) {
       const newData = [...this.requisições];
-      const target = newData.filter(
-        (item) => key === item.key
-      )[0];
+      const target = newData.filter((item) => key === item.key)[0];
       if (target) {
         target[column] = value;
         // console.log(value, "valor");
@@ -487,11 +475,9 @@ export default {
     },
     edit(key) {
       const newData = [...this.requisições];
-      const target = newData.filter(
-        (item) => key === item.key
-      )[0];
+      const target = newData.filter((item) => key === item.key)[0];
       this.editingKey = key;
-      console.log(target);
+      // console.log(target);
 
       if (target) {
         target.editable = true;
@@ -501,21 +487,21 @@ export default {
     save(key) {
       const newData = [...this.requisições];
       // const newCacheData = [...this.cacheData];
-      const target = newData.filter(
-        (item) => key === item.key
-      )[0];
+      const target = newData.filter((item) => key === item.key)[0];
       // console.log(target, "target");
       // const targetCache = newCacheData.filter(item => key === item.key)[0];
       // console.log(targetCache, 'targetCache');
-      console.log(target.paciente);
       if (target) {
         delete target.editable;
         this.requisições = newData;
         Object.assign(target);
       }
       this.date = new Date();
+      console.log(target.id_cadastro);
+
       axios
         .post(`http://localhost:3333/requisicao`, {
+          id_cadastro: target.id_cadastro,
           id_historico: target.id_historico,
           medicamento: target.medicamento,
           valor: target.valor,
@@ -531,14 +517,16 @@ export default {
         .catch((e) => {
           console.log(e.response);
         });
-
+      this.arrayAtualizado = this.requisições.splice(
+        this.requisições.indexOf(key),
+        1
+      );
+      console.log(this.arrayAtualizado);
       this.editingKey = "";
     },
     cancel(key) {
       const newData = [...this.requisições];
-      const target = newData.filter(
-        (item) => key === item.key
-      )[0];
+      const target = newData.filter((item) => key === item.key)[0];
       this.editingKey = "";
       // console.log(target, "target do cancel");
       if (target) {
@@ -623,13 +611,11 @@ img {
   font-size: 30px;
 }
 
-#voltar{
+#voltar {
   width: 100%;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-
 }
-
 </style>
