@@ -94,7 +94,7 @@ export default {
           this.activeError();
         })
         .catch((e) => {
-          console.log(e.response.message);
+          console.log(e);
         });
     },
     activeError() {

@@ -80,6 +80,7 @@
             <a-table
               :columns="columns"
               :data-source="requisições"
+              rowKey="key"
               bordered
               id="tabela"
             >
@@ -94,7 +95,8 @@
                     style="margin: -5px 0"
                     :value="text"
                     @change="
-                      (e) => handleChange(e.target.value, record.key, col)
+                      (e) =>
+                        handleChange(e.target.value, record.id_cadastro, col)
                     "
                   />
                   <template v-else>
@@ -105,10 +107,10 @@
               <template slot="operation" slot-scope="text, record">
                 <div class="editable-row-operations">
                   <span v-if="record.editable">
-                    <a @click="() => save(record.key)">Salvar</a>
+                    <a @click="() => save(record.id_cadastro)">Salvar</a>
                     <a-popconfirm
                       title="Certifique-se de cancelar?"
-                      @confirm="() => cancel(record.key)"
+                      @confirm="() => cancel(record.id_cadastro)"
                     >
                       <a>Cancelar</a>
                     </a-popconfirm>
@@ -116,7 +118,7 @@
                   <span v-else>
                     <a
                       :disabled="editingKey !== ''"
-                      @click="() => edit(record.key)"
+                      @click="() => edit(record.id_cadastro)"
                       >Editar</a
                     >
                   </span>
@@ -200,7 +202,6 @@ import axios from "axios";
 const funcionarios = [];
 const requisições = [];
 
-
 const columnsFuncionarios = [
   {
     title: "cpf",
@@ -255,10 +256,10 @@ const columnsFuncionarios = [
 
 const columns = [
   {
-    title: "id_historico",
-    dataIndex: "id_historico",
+    title: "id_login",
+    dataIndex: "id_login",
     width: "17%",
-    scopedSlots: { customRender: "id_historico" },
+    scopedSlots: { customRender: "id_login" },
   },
   {
     title: "medicamento",
@@ -367,25 +368,12 @@ export default {
     });
 
     axios.get("http://localhost:8081/requisicoes").then((resposta) => {
-      this.data = resposta.data;
-      console.log(this.data.length);
-      console.log(this.arrayAtualizado.length)
-      for (let i = 0; i < this.data.length; i++) {
-        this.requisições.push({
-          key: i,
-          id_cadastro: this.data[i].id_cadastro,
-          id_historico: this.data[i].id_login,
-          medicamento: this.data[i].medicamento,
-          quantidade: this.data[i].quantidade,
-          medico: this.data[i].medico,
-          create_date: this.data[i].create_date,
-        });
-      }
+      this.requisições = resposta.data;
+    });
 
-
-
-      // console.log(this.data.length);
-      console.log(this.requisições);
+    axios.get("http://localhost:3333/historico_preco").then((resposta) => {
+      this.precoLancado = resposta.data;
+      // console.log(this.precoLancado);
     });
 
     // axios
@@ -417,10 +405,16 @@ export default {
   },
   methods: {
     atualiza() {
-      // this.arrayAtualizado = this.requisições;
-      for (let i = 0; i < this.precoLancado.length; i++) {
-        console.log(this.precoLancado[i]);
-      }
+      // const precoFiltradas = this.requisições.filter(preco => this.precoLancado.filter(id => id.id_cadastro === preco.id_cadastro));
+      
+      // console.log(precoFiltradas);
+      // this.requisições = precoFiltradas;
+      const results = this.requisições.filter(({ id_cadastro: id1 }) => !this.precoLancado.some(({ id_cadastro: id2 }) => id2 === id1));
+
+      console.log(typeof results);
+      this.requisições = results;
+
+      
     },
 
     handleSubmit(e) {
@@ -463,31 +457,44 @@ export default {
     precoFechar() {
       this.active1 = false;
       this.active_boletim = true;
+      axios.get("http://localhost:8081/requisicoes").then((resposta) => {
+        this.requisições = resposta.data;
+
+        // console.log(retornoMap);
+        // console.log(this.requisições);
+      });
     },
-    handleChange(value, key, column) {
+    handleChange(value, id_cadastro, column) {
       const newData = [...this.requisições];
-      const target = newData.filter((item) => key === item.key)[0];
+      const target = newData.filter(
+        (item) => id_cadastro === item.id_cadastro
+      )[0];
       if (target) {
         target[column] = value;
         // console.log(value, "valor");
         this.requisições = newData;
       }
     },
-    edit(key) {
+    edit(id_cadastro) {
       const newData = [...this.requisições];
-      const target = newData.filter((item) => key === item.key)[0];
-      this.editingKey = key;
+      const target = newData.filter(
+        (item) => id_cadastro === item.id_cadastro
+      )[0];
+      this.editingKey = id_cadastro;
       // console.log(target);
 
       if (target) {
         target.editable = true;
         this.requisições = newData;
       }
+      // console.log(target.id_cadastro);
     },
-    save(key) {
+    save(id_cadastro) {
       const newData = [...this.requisições];
       // const newCacheData = [...this.cacheData];
-      const target = newData.filter((item) => key === item.key)[0];
+      const target = newData.filter(
+        (item) => id_cadastro === item.id_cadastro
+      )[0];
       // console.log(target, "target");
       // const targetCache = newCacheData.filter(item => key === item.key)[0];
       // console.log(targetCache, 'targetCache');
@@ -497,12 +504,12 @@ export default {
         Object.assign(target);
       }
       this.date = new Date();
-      console.log(target.id_cadastro);
+      // console.log(target.id_cadastro);
 
       axios
-        .post(`http://localhost:3333/requisicao`, {
+        .post(`http://localhost:3333/historico_preco`, {
           id_cadastro: target.id_cadastro,
-          id_historico: target.id_historico,
+          id_historico: target.id_login,
           medicamento: target.medicamento,
           valor: target.valor,
           data_historico: this.date.toLocaleDateString("pt-BR"),
@@ -518,15 +525,17 @@ export default {
           console.log(e.response);
         });
       this.arrayAtualizado = this.requisições.splice(
-        this.requisições.indexOf(key),
+        this.requisições.indexOf(id_cadastro),
         1
       );
-      console.log(this.arrayAtualizado);
+      // console.log(this.arrayAtualizado);
       this.editingKey = "";
     },
-    cancel(key) {
+    cancel(id_cadastro) {
       const newData = [...this.requisições];
-      const target = newData.filter((item) => key === item.key)[0];
+      const target = newData.filter(
+        (item) => id_cadastro === item.id_cadastro
+      )[0];
       this.editingKey = "";
       // console.log(target, "target do cancel");
       if (target) {
