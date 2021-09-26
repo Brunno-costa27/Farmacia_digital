@@ -25,6 +25,11 @@
             <router-view></router-view> -->
             <a @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
           </a-menu-item>
+           <a-menu-item>
+            <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
+            <router-view></router-view> -->
+            <a @click="historicoAparece">Historico</a>
+          </a-menu-item>
           <a-menu-item>
             <router-link to="/login">Sair</router-link>
             <router-view></router-view>
@@ -73,6 +78,25 @@
               fechar
             </a-button>
           </div>
+          <!-- Tabela historico-->
+            <div v-if="active4">
+              <h1 style="color: rgba(0, 0, 0, 0.65); font-size: 20px; font-weight: bold">Lista de cargos admitidos</h1>
+            <a-table
+              :columns="columnsAuditoria"
+              :data-source="auditoria"
+              id="tab"
+            >
+              <a slot="name" slot-scope="text">{{ text }}</a>
+            </a-table>
+            <a-button
+              @click="historicoFechar"
+              type="danger"
+              style="margin-top: 20px"
+            >
+              fechar
+            </a-button>
+          </div>
+
           <div v-if="active1">
             <!-- <a-table :columns="columnsCadastroPreco" :data-source="requisições" bordered id="tabela">
               <a slot="name" slot-scope="text">{{ text }}</a>
@@ -200,6 +224,7 @@
 import Funcionario from "../services/funcionarios";
 import axios from "axios";
 const funcionarios = [];
+const auditoria = [];
 const requisições = [];
 
 const columnsFuncionarios = [
@@ -223,36 +248,20 @@ const columnsFuncionarios = [
   },
 ];
 
-// const columnsCadastroPreco = [
-//   {
-//     title: "medicamento",
-//     dataIndex: "medicamento",
-//     width: "15%",
-//     scopedSlots: { customRender: "medicamento" },
-//   },
-//   {
-//     title: "valor",
-//     dataIndex: "valor",
-//     width: "15%",
-//     scopedSlots: { customRender: "valor" },
-//   },
-//   {
-//     title: "paciente",
-//     dataIndex: "paciente",
-//     width: "40%",
-//     scopedSlots: { customRender: "paciente" },
-//   },
-//   {
-//     title: "data",
-//     dataIndex: "data_historico",
-//     scopedSlots: { customRender: "data_historico" },
-//   },
-//   {
-//     title: "telefone",
-//     dataIndex: "telefone",
-//     scopedSlots: { customRender: "telefone" },
-//   },
-// ];
+const columnsAuditoria = [
+  {
+    title: "cargo",
+    dataIndex: "valor_novo",
+    key: "valor_novo",
+    width: "15%",
+  },
+  {
+    title: "data",
+    dataIndex: "data_changed",
+    key: "data_changed",
+    width: "10%"
+  },
+];
 
 const columns = [
   {
@@ -312,6 +321,7 @@ export default {
       users: "",
       date: "",
       columns,
+      columnsAuditoria,
       data: [],
       arrayAtualizado: [],
       precoLancado: [],
@@ -321,11 +331,13 @@ export default {
       active1: false,
       active2: false,
       active3: false,
+      active4: false,
       active_boletim: true,
       requisições,
       columnsFuncionarios,
       // columnsCadastroPreco,
       funcionarios,
+      auditoria,
       usuario: "",
       modal2Visible: false,
       nome: "",
@@ -361,19 +373,24 @@ export default {
 
   mounted() {
     Funcionario.listar().then((resposta) => {
-      // console.log(resposta.data);
+      console.log(resposta.data);
       this.funcionarios = resposta.data;
       this.usuario = this.$route.params.cpf;
       this.user1(this.usuario);
     });
 
-    axios.get("http://localhost:8081/requisicoes").then((resposta) => {
+    axios.get("http://localhost:8081/requisicoes?${Date.now()}").then((resposta) => {
       this.requisições = resposta.data;
     });
 
-    axios.get("http://localhost:3333/historico_preco").then((resposta) => {
+    axios.get("http://localhost:3333/historico_preco?${Date.now()}").then((resposta) => {
       this.precoLancado = resposta.data;
       // console.log(this.precoLancado);
+    });
+
+     axios.get("http://localhost:3333/auditoria?${Date.now()}").then((resposta) => {
+      this.auditoria = resposta.data;
+      // console.log(this.auditoria);
     });
 
     // axios
@@ -420,7 +437,7 @@ export default {
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post(`http://localhost:3333/funcionario`, {
+        .post("http://localhost:3333/funcionario?${Date.now()}", {
           nome: this.nome,
           cpf: this.cpf,
           senha: this.senha,
@@ -454,10 +471,20 @@ export default {
       this.active = false;
       this.active_boletim = false;
     },
+     historicoAparece() {
+      this.active4 = true;
+      this.active = false;
+      this.active_boletim = false;
+    },
+    historicoFechar() {
+      this.active4 = false;
+      this.active = false;
+      this.active_boletim = true;
+    },
     precoFechar() {
       this.active1 = false;
       this.active_boletim = true;
-      axios.get("http://localhost:8081/requisicoes").then((resposta) => {
+      axios.get("http://localhost:8081/requisicoes?${Date.now()}").then((resposta) => {
         this.requisições = resposta.data;
 
         // console.log(retornoMap);
@@ -507,7 +534,7 @@ export default {
       // console.log(target.id_cadastro);
 
       axios
-        .post(`http://localhost:3333/historico_preco`, {
+        .post("http://localhost:3333/historico_preco?${Date.now()}", {
           id_cadastro: target.id_cadastro,
           id_historico: target.id_login,
           medicamento: target.medicamento,
