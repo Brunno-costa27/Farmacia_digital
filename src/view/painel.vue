@@ -66,6 +66,7 @@
             <a-table
               :columns="columnsFuncionarios"
               :data-source="funcionarios"
+              rowKey="key"
               id="tab"
             >
               <a slot="name" slot-scope="text">{{ text }}</a>
@@ -84,6 +85,7 @@
             <a-table
               :columns="columnsAuditoria"
               :data-source="auditoria"
+              rowKey="key"
               id="tab"
             >
               <a slot="name" slot-scope="text">{{ text }}</a>
@@ -139,8 +141,8 @@
                       <a>Cancelar</a>
                     </a-popconfirm>
                   </span>
-                  <span v-else>
-                    <a
+                  <span v-else id="buttonEditar">
+                    <a 
                       :disabled="editingKey !== ''"
                       @click="() => edit(record.id_cadastro)"
                       >Editar</a
@@ -303,7 +305,7 @@ const columns = [
   {
     title: "operation",
     dataIndex: "operation",
-    width: "9%",
+    width: "10%",
     scopedSlots: { customRender: "operation" },
   },
 ];
@@ -393,32 +395,33 @@ export default {
       // console.log(this.auditoria);
     });
 
-    // axios
-    //   .get("https://covid19-brazil-api.vercel.app/api/report/v1")
-    //   .then((res) => {
-    //     this.dadosCovid = res.data;
-    //     // console.log(res.data);
-    //     for (const key in this.dadosCovid) {
-    //       let valor = this.dadosCovid[key];
-    //       for (const key1 in valor) {
-    //         if (valor[key1].uid === 24) {
-    //           // console.log(valor[key1].state);
-    //           this.Estado = valor[key1].state;
-    //           this.casosCovid = valor[key1].cases;
-    //           this.mortes = valor[key1].deaths;
-    //           this.data_horas = valor[key1].datetime;
-    //           this.converter_data = this.data_horas.slice(0, 10);
-    //           this.data_padrao = this.converter_data
-    //             .split("-")
-    //             .reverse()
-    //             .join("/");
-    //         }
-    //       }
-    //     }
-    //   });
+    axios
+      .get("https://covid19-brazil-api.vercel.app/api/report/v1")
+      .then((res) => {
+        this.dadosCovid = res.data;
+        // console.log(res.data);
+        for (const key in this.dadosCovid) {
+          let valor = this.dadosCovid[key];
+          for (const key1 in valor) {
+            if (valor[key1].uid === 24) {
+              // console.log(valor[key1].state);
+              this.Estado = valor[key1].state;
+              this.casosCovid = valor[key1].cases;
+              this.mortes = valor[key1].deaths;
+              this.data_horas = valor[key1].datetime;
+              this.converter_data = this.data_horas.slice(0, 10);
+              this.data_padrao = this.converter_data
+                .split("-")
+                .reverse()
+                .join("/");
+            }
+          }
+        }
+      });
   },
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "register" });
+    console.log(this.form);
   },
   methods: {
     atualiza() {
@@ -433,6 +436,13 @@ export default {
 
       
     },
+
+    // formatCelular(v){
+    // v=v.replace(/D/g,"");             //Remove tudo o que não é dígito
+    // v=v.replace(/^(d{2})(d)/g,"($1) $2"); //Coloca parênteses em volta dos dois primeiros dígitos
+    // v=v.replace(/(d)(d{4})$/,"$1-$2");    //Coloca hífen entre o quarto e o quinto dígitos
+    // return v;
+    // },
 
     handleSubmit(e) {
       e.preventDefault();
@@ -459,6 +469,7 @@ export default {
     },
     tabelaAparece() {
       this.active = true;
+       this.active4 = false;
       this.active1 = false;
       this.active_boletim = false;
     },
@@ -468,6 +479,7 @@ export default {
     },
     precoAparece() {
       this.active1 = true;
+       this.active4 = false;
       this.active = false;
       this.active_boletim = false;
     },
@@ -484,12 +496,20 @@ export default {
     precoFechar() {
       this.active1 = false;
       this.active_boletim = true;
-      axios.get("http://localhost:8081/requisicoes?${Date.now()}").then((resposta) => {
-        this.requisições = resposta.data;
+        axios.get("http://localhost:8081/requisicoes?${Date.now()}").then((resposta) => {
+      this.requisições = resposta.data;
+    });
 
-        // console.log(retornoMap);
-        // console.log(this.requisições);
-      });
+    axios.get("http://localhost:3333/historico_preco?${Date.now()}").then((resposta) => {
+      this.precoLancado = resposta.data;
+      // console.log(this.precoLancado);
+    });
+        
+     const results = this.requisições.filter(({ id_cadastro: id1 }) => !this.precoLancado.some(({ id_cadastro: id2 }) => id2 === id1));
+
+      console.log(typeof results);
+      this.requisições = results;    
+    
     },
     handleChange(value, id_cadastro, column) {
       const newData = [...this.requisições];
@@ -508,13 +528,13 @@ export default {
         (item) => id_cadastro === item.id_cadastro
       )[0];
       this.editingKey = id_cadastro;
-      // console.log(target);
+      
 
       if (target) {
         target.editable = true;
         this.requisições = newData;
       }
-      // console.log(target.id_cadastro);
+        target.valor = "R$ "
     },
     save(id_cadastro) {
       const newData = [...this.requisições];
@@ -551,10 +571,10 @@ export default {
         .catch((e) => {
           console.log(e.response);
         });
-      this.arrayAtualizado = this.requisições.splice(
-        this.requisições.indexOf(id_cadastro),
-        1
-      );
+      // this.arrayAtualizado = this.requisições.splice(
+      //   this.requisições.indexOf(id_cadastro),
+      //   1
+      // );
       // console.log(this.arrayAtualizado);
       this.editingKey = "";
     },
@@ -570,6 +590,9 @@ export default {
         delete target.editable;
         this.requisições = newData;
       }
+
+       target.valor = ""
+       target.telefone = ""
     },
     setModal1Visible(modal1Visible) {
       this.modal1Visible = modal1Visible;
@@ -653,5 +676,30 @@ img {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+}
+
+#buttonEditar a{
+  text-align: center;
+  color:#2c3e50;
+}
+
+.editable-row-operations{
+  text-align:center;
+  width: 100%;
+  height: 100%;
+  color: #e8e8e8;
+  padding: 5px;
+}
+
+.ant-table-row-cell-break-word{
+  height: 100%;
+}
+
+.editable-row-operations a{
+  text-align:center;
+  width: 100%;
+  height: 100%;
+  color: #2c3e50;
+  padding: 5px;
 }
 </style>
