@@ -28,6 +28,11 @@
            <a-menu-item>
             <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
             <router-view></router-view> -->
+            <a @click="() => (modal2Visible1 = true)">Excluir funcionarios</a>
+          </a-menu-item>
+          <a-menu-item>
+            <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
+            <router-view></router-view> -->
             <a @click="historicoAparece">Historico</a>
           </a-menu-item>
           <a-menu-item>
@@ -76,12 +81,20 @@
               type="danger"
               style="margin-top: 20px"
             >
-              fechar
+              <a-icon type="close" />
             </a-button>
           </div>
           <!-- Tabela historico-->
-            <div v-if="active4">
-              <h1 style="color: rgba(0, 0, 0, 0.65); font-size: 20px; font-weight: bold">Lista de cargos admitidos</h1>
+          <div v-if="active4">
+            <h1
+              style="
+                color: rgba(0, 0, 0, 0.65);
+                font-size: 20px;
+                font-weight: bold;
+              "
+            >
+              Lista de cargos admitidos
+            </h1>
             <a-table
               :columns="columnsAuditoria"
               :data-source="auditoria"
@@ -95,7 +108,7 @@
               type="danger"
               style="margin-top: 20px"
             >
-              fechar
+              <a-icon type="close" />
             </a-button>
           </div>
 
@@ -142,10 +155,10 @@
                     </a-popconfirm>
                   </span>
                   <span v-else id="buttonEditar">
-                    <a 
+                    <a
                       :disabled="editingKey !== ''"
                       @click="() => edit(record.id_cadastro)"
-                      >Editar</a
+                      >Lançar preços</a
                     >
                   </span>
                 </div>
@@ -156,7 +169,7 @@
               type="danger"
               style="margin-top: 20px max-width: 100%;"
             >
-              Fechar
+              <a-icon type="close" />
             </a-button>
           </div>
 
@@ -217,6 +230,51 @@
               </a-form>
             </div>
           </a-modal>
+          <a-modal
+            v-model="modal2Visible1"
+            title="Excluir funcionarios"
+            centered
+            @ok="
+              () => (
+                (modal2Visible1 = false), (active2 = false), (active3 = false)
+              )
+            "
+          >
+            <div>
+              <a-form :form="form" @submit="handleSubmit1">
+
+                <a-form-item
+                  v-bind="formItemLayout"
+                  label="cpf"
+                  has-feedback
+                  v-mask="'###.###.###-##'"
+                >
+                  <a-input v-model="cpf" required />
+                </a-form-item>
+                <a-form-item v-bind="formItemLayout">
+                  <a-button
+                    type="primary"
+                    html-type="submit"
+                    @click="activeError"
+                  >
+                    Excluir
+                  </a-button>
+                  <a-alert
+                    v-if="active2"
+                    type="error"
+                    message="Funcionário já existe!"
+                    style="text-align: center"
+                  />
+                  <a-alert
+                    v-if="active3"
+                    type="success"
+                    message="O funcionário foi removido!"
+                    style="text-align: center"
+                  />
+                </a-form-item>
+              </a-form>
+            </div>
+          </a-modal>
         </div>
       </a-layout-content>
     </a-layout>
@@ -261,51 +319,58 @@ const columnsAuditoria = [
     title: "data",
     dataIndex: "data_changed",
     key: "data_changed",
-    width: "10%"
+    width: "10%",
   },
 ];
 
 const columns = [
   {
-    title: "id_login",
+    title: "id",
     dataIndex: "id_login",
     width: "17%",
+    align: "center",
     scopedSlots: { customRender: "id_login" },
   },
   {
-    title: "medicamento",
+    title: "Medicamento",
     dataIndex: "medicamento",
     width: "10%",
+    align: "center",
     scopedSlots: { customRender: "medicamento" },
   },
   {
-    title: "valor",
+    title: "Valor",
     dataIndex: "valor",
     width: "8%",
+    align: "center",
     scopedSlots: { customRender: "valor" },
   },
   {
-    title: "medico",
+    title: "Medico",
     dataIndex: "medico",
     width: "10%",
+    align: "center",
     scopedSlots: { customRender: "medico" },
   },
   {
-    title: "quantidade",
+    title: "Quantidade",
     dataIndex: "quantidade",
     width: "7%",
+    align: "center",
     scopedSlots: { customRender: "quantidade" },
   },
   {
-    title: "telefone",
+    title: "Telefone",
     dataIndex: "telefone",
     width: "10%",
+    align: "center",
     scopedSlots: { customRender: "telefone" },
   },
   {
-    title: "operation",
+    title: "Operação",
     dataIndex: "operation",
-    width: "10%",
+    width: "15%",
+    align: "center",
     scopedSlots: { customRender: "operation" },
   },
 ];
@@ -325,6 +390,7 @@ export default {
       columns,
       columnsAuditoria,
       data: [],
+      arrayAuxiliar: [],
       arrayAtualizado: [],
       precoLancado: [],
       editingKey: "",
@@ -342,6 +408,7 @@ export default {
       auditoria,
       usuario: "",
       modal2Visible: false,
+      modal2Visible1: false,
       nome: "",
       cpf: "",
       senha: "",
@@ -381,19 +448,31 @@ export default {
       this.user1(this.usuario);
     });
 
-    axios.get("http://localhost:8081/requisicoes?${Date.now()}").then((resposta) => {
-      this.requisições = resposta.data;
-    });
+    axios
+      .get(`http://localhost:8081/requisicoes?${Date.now()}`)
+      .then((resposta) => {
+        this.requisições = resposta.data;
+      });
 
-    axios.get("http://localhost:3333/historico_preco?${Date.now()}").then((resposta) => {
-      this.precoLancado = resposta.data;
-      // console.log(this.precoLancado);
-    });
+    axios
+      .get(`http://localhost:3333/historico_preco?${Date.now()}`)
+      .then((resposta) => {
+        this.precoLancado = resposta.data;
+        // console.log(this.precoLancado);
+      });
 
-     axios.get("http://localhost:3333/auditoria?${Date.now()}").then((resposta) => {
-      this.auditoria = resposta.data;
-      // console.log(this.auditoria);
-    });
+    axios
+      .get(`http://localhost:3333/auditoria?${Date.now()}`)
+      .then((resposta) => {
+        this.arrayAuxiliar = resposta.data;
+        this.arrayAuxiliar.forEach(item => {
+        item.data_changed = item.data_changed.slice(0, 10).split("-")
+                .reverse()
+                .join("/");
+        });
+        this.auditoria = this.arrayAuxiliar;
+        // console.log(this.auditoria);
+      });
 
     axios
       .get("https://covid19-brazil-api.vercel.app/api/report/v1")
@@ -426,15 +505,16 @@ export default {
   methods: {
     atualiza() {
       // const precoFiltradas = this.requisições.filter(preco => this.precoLancado.filter(id => id.id_cadastro === preco.id_cadastro));
-      
+
       // console.log(precoFiltradas);
       // this.requisições = precoFiltradas;
-      const results = this.requisições.filter(({ id_cadastro: id1 }) => !this.precoLancado.some(({ id_cadastro: id2 }) => id2 === id1));
+      const results = this.requisições.filter(
+        ({ id_cadastro: id1 }) =>
+          !this.precoLancado.some(({ id_cadastro: id2 }) => id2 === id1)
+      );
 
       console.log(typeof results);
       this.requisições = results;
-
-      
     },
 
     // formatCelular(v){
@@ -447,7 +527,7 @@ export default {
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post("http://localhost:3333/funcionario?${Date.now()}", {
+        .post(`http://localhost:3333/funcionario?${Date.now()}`, {
           nome: this.nome,
           cpf: this.cpf,
           senha: this.senha,
@@ -463,13 +543,28 @@ export default {
         });
     },
 
+    handleSubmit1(e) {
+      e.preventDefault();
+      axios
+        .delete(`http://localhost:3333/funcionario/${this.cpf}`, {
+        })
+        .then((res) => {
+          this.messageError = res.data.error;
+          this.message = res.data.message;
+          this.activeError1();
+        })
+        .catch((e) => {
+          console.log(e.response);
+        });
+    },
+
     user1(usuario) {
       this.users = this.funcionarios.find((user) => user.cpf === usuario);
       // console.log(this.users.nome);
     },
     tabelaAparece() {
       this.active = true;
-       this.active4 = false;
+      this.active4 = false;
       this.active1 = false;
       this.active_boletim = false;
     },
@@ -479,13 +574,14 @@ export default {
     },
     precoAparece() {
       this.active1 = true;
-       this.active4 = false;
+      this.active4 = false;
       this.active = false;
       this.active_boletim = false;
     },
-     historicoAparece() {
+    historicoAparece() {
       this.active4 = true;
       this.active = false;
+      this.active1 = false;
       this.active_boletim = false;
     },
     historicoFechar() {
@@ -496,20 +592,26 @@ export default {
     precoFechar() {
       this.active1 = false;
       this.active_boletim = true;
-        axios.get("http://localhost:8081/requisicoes?${Date.now()}").then((resposta) => {
-      this.requisições = resposta.data;
-    });
+      axios
+        .get(`http://localhost:8081/requisicoes?${Date.now()}`)
+        .then((resposta) => {
+          this.requisições = resposta.data;
+        });
 
-    axios.get("http://localhost:3333/historico_preco?${Date.now()}").then((resposta) => {
-      this.precoLancado = resposta.data;
-      // console.log(this.precoLancado);
-    });
-        
-     const results = this.requisições.filter(({ id_cadastro: id1 }) => !this.precoLancado.some(({ id_cadastro: id2 }) => id2 === id1));
+      axios
+        .get(`http://localhost:3333/historico_preco?${Date.now()}`)
+        .then((resposta) => {
+          this.precoLancado = resposta.data;
+          // console.log(this.precoLancado);
+        });
+
+      const results = this.requisições.filter(
+        ({ id_cadastro: id1 }) =>
+          !this.precoLancado.some(({ id_cadastro: id2 }) => id2 === id1)
+      );
 
       console.log(typeof results);
-      this.requisições = results;    
-    
+      this.requisições = results;
     },
     handleChange(value, id_cadastro, column) {
       const newData = [...this.requisições];
@@ -528,13 +630,12 @@ export default {
         (item) => id_cadastro === item.id_cadastro
       )[0];
       this.editingKey = id_cadastro;
-      
 
       if (target) {
         target.editable = true;
         this.requisições = newData;
       }
-        target.valor = "R$ "
+      target.valor = "R$ ";
     },
     save(id_cadastro) {
       const newData = [...this.requisições];
@@ -554,7 +655,7 @@ export default {
       // console.log(target.id_cadastro);
 
       axios
-        .post("http://localhost:3333/historico_preco?${Date.now()}", {
+        .post(`http://localhost:3333/historico_preco?${Date.now()}`, {
           id_cadastro: target.id_cadastro,
           id_historico: target.id_login,
           medicamento: target.medicamento,
@@ -591,8 +692,8 @@ export default {
         this.requisições = newData;
       }
 
-       target.valor = ""
-       target.telefone = ""
+      target.valor = "";
+      target.telefone = "";
     },
     setModal1Visible(modal1Visible) {
       this.modal1Visible = modal1Visible;
@@ -613,6 +714,26 @@ export default {
         this.cargo = "";
         this.nome = "";
         console.log("deu certo , cadastrou");
+        Funcionario.listar().then((resposta) => {
+          // console.log(resposta.data);
+          this.funcionarios = resposta.data;
+          this.usuario = this.$route.params.cpf;
+          this.user1(this.usuario);
+        });
+      }
+      this.messageError = "";
+      this.message = "";
+    },
+    activeError1() {
+      if (this.messageError === "Funcionário não existe!") {
+        console.log("funcionario já existe");
+        this.active2 = true;
+        this.cpf = "";
+      } else if (this.message === "Apagado com sucesso!") {
+        this.active2 = false;
+        this.active3 = true;
+        this.cpf = "";
+        console.log("deu certo , excluiu o funcionario");
         Funcionario.listar().then((resposta) => {
           // console.log(resposta.data);
           this.funcionarios = resposta.data;
@@ -678,28 +799,36 @@ img {
   align-items: center;
 }
 
-#buttonEditar a{
+#buttonEditar a {
   text-align: center;
-  color:#2c3e50;
+  color: white;
 }
 
-.editable-row-operations{
-  text-align:center;
+.editable-row-operations {
+  text-align: center;
   width: 100%;
   height: 100%;
   color: #e8e8e8;
   padding: 5px;
 }
 
-.ant-table-row-cell-break-word{
+.ant-table-row-cell-break-word {
   height: 100%;
 }
 
-.editable-row-operations a{
-  text-align:center;
+.editable-row-operations a {
+  text-align: center;
   width: 100%;
   height: 100%;
-  color: #2c3e50;
-  padding: 5px;
+  color: white;
+  padding: 10px;
+  background-color: #2c3e50;
+  border-radius: 20px;
 }
+
+.ant-btn {
+  background-color: white;
+}
+
+
 </style>
