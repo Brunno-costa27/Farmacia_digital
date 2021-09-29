@@ -25,7 +25,7 @@
             <router-view></router-view> -->
             <a @click="() => (modal2Visible = true)">Cadastrar funcionarios</a>
           </a-menu-item>
-           <a-menu-item>
+          <a-menu-item>
             <!-- <router-link to="/cadastro">Cadastrar funcionarios</router-link>
             <router-view></router-view> -->
             <a @click="() => (modal2Visible1 = true)">Excluir funcionarios</a>
@@ -57,13 +57,25 @@
         >
           <div id="inform" v-if="active_boletim">
             <div>
-              <h1 id="center_boletin">Boletim covid</h1>
+              <!-- <h1 id="center_boletin">Boletim covid</h1>
               <h1 id="texto_boletim">Estado:{{ Estado }}</h1>
               <h1 id="texto_boletim">Casos:{{ casosCovid }}</h1>
               <h1 id="texto_boletim">Mortes:{{ mortes }}</h1>
               <h1 id="texto_boletim">
                 Data da última atualização:{{ data_padrao }}
-              </h1>
+              </h1> -->
+              <div style="background: #ececec; padding: 30px">
+                <a-card
+                  title="Boletin covid"
+                  :bordered="false"
+                  style="width: 300px"
+                >
+                  <p>Estado: {{Estado}}</p>
+                  <p>Casos: {{casosCovid}}</p>
+                  <p>Mortes: {{mortes}}</p>
+                   <p>Data da última atualização: {{data_padrao}}</p>
+                </a-card>
+              </div>
             </div>
           </div>
 
@@ -242,7 +254,6 @@
           >
             <div>
               <a-form :form="form" @submit="handleSubmit1">
-
                 <a-form-item
                   v-bind="formItemLayout"
                   label="cpf"
@@ -449,26 +460,28 @@ export default {
     });
 
     axios
-      .get(`http://localhost:8081/requisicoes?${Date.now()}`)
+      .get(`http://localhost:8081/requisicoes?${Date.now()}`)// pegar da rota do azure portalpaciente
       .then((resposta) => {
         this.requisições = resposta.data;
       });
 
     axios
-      .get(`http://localhost:3333/historico_preco?${Date.now()}`)
+      .get(`http://localhost:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
       .then((resposta) => {
         this.precoLancado = resposta.data;
         // console.log(this.precoLancado);
       });
 
     axios
-      .get(`http://localhost:3333/auditoria?${Date.now()}`)
+      .get(`http://localhost:3333/auditoria?${Date.now()}`) // pegar da rota do azure portalfarmacia
       .then((resposta) => {
         this.arrayAuxiliar = resposta.data;
-        this.arrayAuxiliar.forEach(item => {
-        item.data_changed = item.data_changed.slice(0, 10).split("-")
-                .reverse()
-                .join("/");
+        this.arrayAuxiliar.forEach((item) => {
+          item.data_changed = item.data_changed
+            .slice(0, 10)
+            .split("-")
+            .reverse()
+            .join("/");
         });
         this.auditoria = this.arrayAuxiliar;
         // console.log(this.auditoria);
@@ -527,7 +540,7 @@ export default {
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post(`http://localhost:3333/funcionario?${Date.now()}`, {
+        .post(`http://localhost:3333/funcionario?${Date.now()}`, { //cadastrar funcionario na rota do azure do portalfarmacia
           nome: this.nome,
           cpf: this.cpf,
           senha: this.senha,
@@ -546,8 +559,7 @@ export default {
     handleSubmit1(e) {
       e.preventDefault();
       axios
-        .delete(`http://localhost:3333/funcionario/${this.cpf}`, {
-        })
+        .delete(`http://localhost:3333/funcionario/${this.cpf}`, {}) // deletar na rota da azure no portalfarmacia
         .then((res) => {
           this.messageError = res.data.error;
           this.message = res.data.message;
@@ -593,13 +605,13 @@ export default {
       this.active1 = false;
       this.active_boletim = true;
       axios
-        .get(`http://localhost:8081/requisicoes?${Date.now()}`)
+        .get(`http://localhost:8081/requisicoes?${Date.now()}`) // pegar da rota do azure portalpaciente
         .then((resposta) => {
           this.requisições = resposta.data;
         });
 
       axios
-        .get(`http://localhost:3333/historico_preco?${Date.now()}`)
+        .get(`http://localhost:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
         .then((resposta) => {
           this.precoLancado = resposta.data;
           // console.log(this.precoLancado);
@@ -655,7 +667,7 @@ export default {
       // console.log(target.id_cadastro);
 
       axios
-        .post(`http://localhost:3333/historico_preco?${Date.now()}`, {
+        .post(`http://localhost:3333/historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
           id_cadastro: target.id_cadastro,
           id_historico: target.id_login,
           medicamento: target.medicamento,
@@ -770,7 +782,6 @@ img {
 
 #inform {
   /* margin-top: 60px; */
-  background-color: red;
   border-radius: 5px;
   width: 100%;
   display: flex;
@@ -781,18 +792,22 @@ img {
 
 #center_boletin {
   text-decoration: underline;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   color: white;
   font-size: 30px;
 }
 
 #texto_boletim {
   text-decoration: none;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   color: white;
   font-size: 30px;
 }
 
 #voltar {
   width: 100%;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-weight: 100;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -801,6 +816,7 @@ img {
 
 #buttonEditar a {
   text-align: center;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   color: white;
 }
 
@@ -810,10 +826,12 @@ img {
   height: 100%;
   color: #e8e8e8;
   padding: 5px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
 }
 
 .ant-table-row-cell-break-word {
   height: 100%;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
 }
 
 .editable-row-operations a {
@@ -824,11 +842,16 @@ img {
   padding: 10px;
   background-color: #2c3e50;
   border-radius: 20px;
+  
 }
 
 .ant-btn {
   background-color: white;
 }
 
-
+/* @media (min-width: 360px) and (max-width: 640px) {
+  .ant-layout-content{
+    display: none;
+  }
+} */
 </style>
