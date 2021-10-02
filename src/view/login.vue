@@ -82,7 +82,7 @@ export default {
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post(`http://localhost:3333/autenticacao`, {
+        .post(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/autenticacao`, {
           cpf: this.cpf,
           senha: this.senha,
         })
