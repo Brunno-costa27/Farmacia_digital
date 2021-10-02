@@ -460,7 +460,7 @@ export default {
     });
 
     axios
-      .get(`http://localhost:8081/requisicoes?${Date.now()}`)// pegar da rota do azure portalpaciente
+      .get(`http://portalwebpaciente.brazilsouth.cloudapp.azure.com:8081/requisicoes?${Date.now()}`)// pegar da rota do azure portalpaciente
       .then((resposta) => {
         this.requisições = resposta.data;
       });
@@ -605,7 +605,7 @@ export default {
       this.active1 = false;
       this.active_boletim = true;
       axios
-        .get(`http://localhost:8081/requisicoes?${Date.now()}`) // pegar da rota do azure portalpaciente
+        .get(`http://portalwebpaciente.brazilsouth.cloudapp.azure.com:8081/requisicoes?${Date.now()}`) // pegar da rota do azure portalpaciente
         .then((resposta) => {
           this.requisições = resposta.data;
         });
