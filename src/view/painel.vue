@@ -466,14 +466,14 @@ export default {
       });
 
     axios
-      .get(`http://localhost:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
+      .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
       .then((resposta) => {
         this.precoLancado = resposta.data;
         // console.log(this.precoLancado);
       });
 
     axios
-      .get(`http://localhost:3333/auditoria?${Date.now()}`) // pegar da rota do azure portalfarmacia
+      .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/auditoria?${Date.now()}`) // pegar da rota do azure portalfarmacia
       .then((resposta) => {
         this.arrayAuxiliar = resposta.data;
         this.arrayAuxiliar.forEach((item) => {
@@ -540,7 +540,7 @@ export default {
     handleSubmit(e) {
       e.preventDefault();
       axios
-        .post(`http://localhost:3333/funcionario?${Date.now()}`, { //cadastrar funcionario na rota do azure do portalfarmacia
+        .post(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/funcionario?${Date.now()}`, { //cadastrar funcionario na rota do azure do portalfarmacia
           nome: this.nome,
           cpf: this.cpf,
           senha: this.senha,
@@ -559,7 +559,7 @@ export default {
     handleSubmit1(e) {
       e.preventDefault();
       axios
-        .delete(`http://localhost:3333/funcionario/${this.cpf}`, {}) // deletar na rota da azure no portalfarmacia
+        .delete(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/funcionario/${this.cpf}`, {}) // deletar na rota da azure no portalfarmacia
         .then((res) => {
           this.messageError = res.data.error;
           this.message = res.data.message;
@@ -611,7 +611,7 @@ export default {
         });
 
       axios
-        .get(`http://localhost:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
+        .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
         .then((resposta) => {
           this.precoLancado = resposta.data;
           // console.log(this.precoLancado);
@@ -667,7 +667,7 @@ export default {
       // console.log(target.id_cadastro);
 
       axios
-        .post(`http://localhost:3333/historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
+        .post(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
           id_cadastro: target.id_cadastro,
           id_historico: target.id_login,
           medicamento: target.medicamento,
