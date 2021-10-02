@@ -53,7 +53,7 @@
           </div>
         </a-button>
       </a-form-item>
-      <a-alert v-if="active" type="error" v-text="message" />
+      <a-alert v-if="active" type="error" v-text="message" style="background-color: red; color: white" />
     </a-form>
   </div>
 </template>
@@ -138,5 +138,6 @@ export default {
   height: 400px;
   border-radius: 10px;
 }
+
 </style>
 
