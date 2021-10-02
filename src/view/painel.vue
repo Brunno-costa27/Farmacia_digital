@@ -611,11 +611,7 @@ export default {
         });
 
       axios
-<<<<<<< HEAD
-        .get(`http://localhost:3333/historico_preco`) // pegar da rota do azure portalfarmacia
-=======
         .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
->>>>>>> 842acd8c07bd2d2de8fab61f148d38e3398fb606
         .then((resposta) => {
           this.precoLancado = resposta.data;
           // console.log(this.precoLancado);
