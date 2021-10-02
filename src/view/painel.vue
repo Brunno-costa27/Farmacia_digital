@@ -611,7 +611,11 @@ export default {
         });
 
       axios
+<<<<<<< HEAD
         .get(`http://localhost:3333/historico_preco`) // pegar da rota do azure portalfarmacia
+=======
+        .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`) // pegar da rota do azure portalfarmacia
+>>>>>>> 842acd8c07bd2d2de8fab61f148d38e3398fb606
         .then((resposta) => {
           this.precoLancado = resposta.data;
           // console.log(this.precoLancado);
@@ -667,7 +671,11 @@ export default {
       // console.log(target.id_cadastro);
 
       axios
+<<<<<<< HEAD
         .post(`http://localhost:3333historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
+=======
+        .post(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
+>>>>>>> 842acd8c07bd2d2de8fab61f148d38e3398fb606
           id_cadastro: target.id_cadastro,
           id_historico: target.id_login,
           medicamento: target.medicamento,
