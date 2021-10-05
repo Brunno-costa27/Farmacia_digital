@@ -606,13 +606,13 @@ export default {
       this.active1 = false;
       this.active_boletim = true;
       axios
-        .get(`http://localhost:8081/requisicoes?${Date.now()}`) // pegar da rota do azure portalpaciente
+        .get(`http://portalwebpaciente.brazilsouth.cloudapp.azure.com:8081/requisicoes?${Date.now()}`) // pegar da rota do azure portalpaciente
         .then((resposta) => {
           this.requisições = resposta.data;
         });
 
       axios
-        .get(`http://localhost:3333/historicoDePreco?${Date.now()}`) // pegar da rota do azure portalfarmacia
+        .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historicoDePreco?${Date.now()}`) // pegar da rota do azure portalfarmacia
         .then((resposta) => {
           this.precoLancado = resposta.data;
           // console.log(this.precoLancado);
@@ -668,7 +668,7 @@ export default {
       // console.log(target.id_cadastro);
 
       axios
-        .post(`http://localhost:3333/historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
+        .post(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/historico_preco?${Date.now()}`, {// pegar do azure no portalfarmacia
           id_cadastro: target.id_cadastro,
           id_historico: target.id_login,
           medicamento: target.medicamento,
@@ -735,7 +735,7 @@ export default {
         });
 
            axios
-      .get(`http://localhost:3333/auditoria?${Date.now()}`) // pegar da rota do azure portalfarmacia
+      .get(`http://portalfarmacia.brazilsouth.cloudapp.azure.com:3333/auditoria?${Date.now()}`) // pegar da rota do azure portalfarmacia
       .then((resposta) => {
         this.arrayAuxiliar = resposta.data;
         this.arrayAuxiliar.forEach((item) => {
